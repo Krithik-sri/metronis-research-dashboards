@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post-Training — Paper Source Map</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #ffffff; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 20px; margin: 0 0 2px; }
+  .sub { color: #666; font-size: 13px; margin: 0 0 14px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  .stat { background: #f5f6f8; border: 1px solid #e7e8ec; border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+  .stat b { font-size: 16px; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 0 14px; font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .graph-card { border: 1px solid #e7e8ec; border-radius: 14px; background: #fbfbfc; overflow: hidden; }
+  svg { display: block; width: 100%; height: auto; }
+  .edge { stroke: #cfd2da; stroke-width: 1; }
+  .edge.center { stroke: #e6e8ee; stroke-dasharray: 3 3; }
+  .clu-label { font-size: 12px; font-weight: 700; fill: #222; }
+  .paper-node { cursor: pointer; }
+  .paper-node:hover circle { stroke: #111; stroke-width: 2.5; }
+  .center-label { font-size: 12.5px; font-weight: 700; fill: #fff; }
+  .footnote { color: #888; font-size: 12px; margin-top: 14px; line-height: 1.5; }
+  #tip { position: fixed; pointer-events: none; z-index: 50; max-width: 330px; background: #1a1a1a; color: #fff; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; line-height: 1.45; opacity: 0; transition: opacity .1s; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+  #tip .t-title { font-weight: 700; margin-bottom: 4px; }
+  #tip .t-meta { color: #b9c0cc; font-size: 11px; margin-bottom: 5px; }
+  #tip .t-hint { color: #9aa3b2; font-size: 11px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Post-Training — Paper Source Map</h1>
+  <p class="sub">This month's papers across the post-training space, clustered by sub-area; node color = source type, institution shown on hover. Topic: <b>Post-Training</b> · window: <b>May 2026</b>. (Per-institution breakdown: the Notion "By Institution" board.)</p>
+  <div class="stats" id="stats"></div>
+  <div class="legend" id="legend"></div>
+  <div class="graph-card">
+    <svg id="graph" viewBox="0 0 1000 860" preserveAspectRatio="xMidYMid meet" aria-label="Knowledge graph of post-training papers by sub-area"></svg>
+  </div>
+  <p class="footnote">Each outer cluster is a post-training sub-area; inner dots are papers, colored by affiliation type (Industry / Academic / Mixed / Independent / Unknown). Click a paper to open it on arXiv; hover for its institution, sub-areas, and summary. Rebuilt by the monthly automation; scoped to the trailing month.</p>
+</div>
+<div id="tip"></div>
+<script>
+const TYPE_COLORS = { "Industry":"#e8833a","Academic":"#3b82f6","Independent":"#22a06b","Mixed":"#8b5cf6","Unknown":"#9aa0aa" };
+
+const PAPERS = [
+  {short:"Beyond GRPO", title:"Beyond GRPO and On-Policy Distillation: Sparse-to-Dense Reward Principle", inst:"Princeton", type:"Academic", subarea:"Policy Optimization", link:"https://arxiv.org/abs/2605.12483", published:"May 2026", summary:"Allocate verifiable examples to the model/reward density where most informative; beats GRPO under limited data."},
+  {short:"Mu-GRPO", title:"How Off-Policy Can GRPO Be? Mu-GRPO", inst:"Rice University", type:"Academic", subarea:"Policy Optimization", link:"https://arxiv.org/abs/2605.17570", published:"May 2026", summary:"Pushes GRPO off-policy for more efficient RLVR training."},
+  {short:"Signal Reshaping GRPO", title:"Signal Reshaping for GRPO in Weak-Feedback Agentic Code Repair", inst:"CUHK / SYSU / Tencent", type:"Mixed", subarea:"Policy Optimization", link:"https://arxiv.org/abs/2605.07276", published:"May 2026", summary:"GRPO signal reshaping for a weak-feedback agentic code-repair environment."},
+  {short:"MASS-DPO", title:"MASS-DPO: Multi-negative Active Sample Selection for DPO", inst:"UC San Diego / Adobe", type:"Mixed", subarea:"Preference/Alignment", link:"https://arxiv.org/abs/2605.10784", published:"May 2026", summary:"Multi-negative active sample selection for DPO under Plackett-Luce."},
+  {short:"Gradient-Gated DPO", title:"Gradient-Gated DPO: Stabilizing Preference Optimization", inst:"University of Windsor", type:"Academic", subarea:"Preference/Alignment", link:"https://arxiv.org/abs/2605.02626", published:"May 2026", summary:"Gradient gating to stabilize DPO."},
+  {short:"Alignment Collapse RLHF", title:"Explaining and Preventing Alignment Collapse in Iterative RLHF", inst:"Inria / ENS PSL / UC Berkeley", type:"Academic", subarea:"RLHF", link:"https://arxiv.org/abs/2605.04266", published:"May 2026", summary:"Why iterative RLHF collapses when the reward model is retrained on policy data, and how to prevent it."},
+  {short:"RLVR Overfitting", title:"Implicit Reward Overfitting and Low-rank Dynamics in RLVR", inst:"Lanzhou / NUS / BIT", type:"Academic", subarea:"RLVR", link:"https://arxiv.org/abs/2605.06523", published:"May 2026", summary:"Reasoning gains from RLVR concentrate in a low-rank subspace; analyzes implicit reward overfitting."},
+  {short:"RewardHarness", title:"RewardHarness: Self-Evolving Agentic Post-Training", inst:"UBC / Vector / CMU + Kuaishou", type:"Mixed", subarea:"Reward Modeling", link:"https://arxiv.org/abs/2605.08703", published:"May 2026", summary:"Self-evolving agentic reward modeling without large-scale preference annotation."},
+  {short:"Pref Self-Distillation", title:"Preference-Based Self-Distillation: Beyond KL Matching", inst:"Penn State / ByteDance", type:"Mixed", subarea:"Distillation", link:"https://arxiv.org/abs/2605.05040", published:"May 2026", summary:"On-policy distillation beyond KL via reward regularization; no stronger teacher needed."},
+  {short:"On-Policy + Distill (Long-Ctx)", title:"Combining On-Policy Optimization and Distillation for Long-Context Reasoning", inst:"IST Lisboa / TransPerfect", type:"Mixed", subarea:"Distillation", link:"https://arxiv.org/abs/2605.12227", published:"May 2026", summary:"Combines on-policy RL + distillation for long-context reasoning."},
+  {short:"Anti-Self-Distillation", title:"Anti-Self-Distillation for Reasoning RL via PMI", inst:"Xiaohongshu / CASIA", type:"Mixed", subarea:"Distillation", link:"https://arxiv.org/abs/2605.11609", published:"May 2026", summary:"Pointwise mutual information to counter degenerate self-distillation in reasoning RL."},
+  {short:"Self-Verified Distillation", title:"Self-Verified Distillation: LLM as Its Own Synthetic Data Pipeline", inst:"Stanford", type:"Academic", subarea:"Distillation", link:"https://arxiv.org/abs/2605.26132", published:"May 2026", summary:"LLM self-improves from unlabeled prompts via self-verified distillation."},
+  {short:"EnvFactory", title:"EnvFactory: Scaling Tool-Use Agents via Executable Environment Synthesis", inst:"HKUST-GZ / Huawei / Cambridge / UCL", type:"Mixed", subarea:"Agentic/RL Env", link:"https://arxiv.org/abs/2605.18703", published:"May 2026", summary:"Synthesizes executable environments at scale for robust agentic RL tool-use."},
+  {short:"Self-Distilled Agentic RL", title:"Self-Distilled Agentic Reinforcement Learning", inst:"Zhejiang / Meituan / Tsinghua", type:"Mixed", subarea:"Agentic/RL Env", link:"https://arxiv.org/abs/2605.15155", published:"May 2026", summary:"On-policy self-distillation to densify coarse trajectory rewards in long-horizon agentic RL."},
+  {short:"Polar", title:"Polar: Agentic RL on Any Harness at Scale", inst:"NVIDIA", type:"Industry", subarea:"Agentic/RL Env", link:"https://arxiv.org/abs/2605.24220", published:"May 2026", summary:"Runs agentic RL across arbitrary harnesses (long context, multi-turn tools, multi-agent) at scale."},
+  {short:"Orchestration Traces", title:"RL for LLM-based Multi-Agent Systems through Orchestration Traces", inst:"Independent", type:"Independent", subarea:"Agentic/RL Env", link:"https://arxiv.org/abs/2605.02801", published:"May 2026", summary:"Trace-driven RL for multi-agent LLM systems."},
+  {short:"LongTraceRL", title:"LongTraceRL: Long-Context Reasoning from Search Agent Trajectories with Rubric Rewards", inst:"Tsinghua University", type:"Academic", subarea:"Reasoning", link:"https://arxiv.org/abs/2605.31584", published:"May 2026", summary:"Rubric-reward RL from search-agent trajectories for long-context reasoning."},
+  {short:"Zipping the Thought", title:"Zipping the Thought: Compressed Reasoning Data in LLM Post-Training", inst:"Penn State", type:"Academic", subarea:"Reasoning", link:"https://arxiv.org/abs/2605.28008", published:"May 2026", summary:"When/how compressed chain-of-thought data helps post-training."},
+  {short:"Learn to Think", title:"Learn to Think: Vision-Aware Self-Improvement for Multimodal Reasoning", inst:"Wuhan / Sydney / NTU", type:"Academic", subarea:"Reasoning", link:"https://arxiv.org/abs/2605.11931", published:"May 2026", summary:"Vision-aware self-improvement to get reasoning traces for MLLMs without costly annotation."},
+  {short:"States Not Tokens", title:"Post-Training is About States, Not Tokens", inst:"Independent", type:"Independent", subarea:"SFT/Instruction Tuning", link:"https://arxiv.org/abs/2605.22731", published:"May 2026", summary:"A state-distribution view unifying SFT, RL, and on-policy distillation."},
+  {short:"SAE Data Engineering", title:"Guiding Post-training Data Engineering with SAE Model Internals", inst:"Tsinghua University", type:"Academic", subarea:"Data/Synthetic", link:"https://arxiv.org/abs/2605.27354", published:"May 2026", summary:"Sparse-autoencoder internals guide post-training data engineering."},
+  {short:"Dr. Post-Training", title:"Dr. Post-Training: A Data Regularization Perspective", inst:"UIUC / Michigan", type:"Academic", subarea:"Data/Synthetic", link:"https://arxiv.org/abs/2605.07063", published:"May 2026", summary:"Data-regularization view of mixing scarce high-fidelity data with abundant general data."},
+  {short:"Contamination-Resistant", title:"LLM Benchmark Datasets Should Be Contamination-Resistant", inst:"Penn State", type:"Academic", subarea:"Eval/Benchmark", link:"https://arxiv.org/abs/2605.19999", published:"May 2026", summary:"Argues for contamination-resistant benchmark design."},
+  {short:"EvoPref", title:"EvoPref: Multi-Objective Evolutionary Optimization for Diverse LLM Alignment", inst:"HKU + Stellaris AI", type:"Mixed", subarea:"Preference/Alignment", link:"https://arxiv.org/abs/2605.09777", published:"May 2026", summary:"Non-gradient evolutionary optimization to discover diverse alignments, countering preference collapse."},
+  {short:"AdaDPO", title:"AdaDPO: Self-Adaptive DPO with Balanced Gradient Updates", inst:"Incept Labs + Titan", type:"Industry", subarea:"Preference/Alignment", link:"https://arxiv.org/abs/2605.28440", published:"May 2026", summary:"Self-adaptive DPO balancing asymmetric gradient updates between chosen and rejected responses."},
+  {short:"ξ-DPO", title:"ξ-DPO: Direct Preference Optimization via Ratio Reward Margin", inst:"Northwestern Polytechnical U.", type:"Academic", subarea:"Preference/Alignment", link:"https://arxiv.org/abs/2605.10981", published:"May 2026", summary:"Reference-free preference optimization via a ratio reward margin (SimPO-style)."},
+  {short:"Unsupervised PRM", title:"Unsupervised Process Reward Models", inst:"EPFL", type:"Academic", subarea:"Reward Modeling", link:"https://arxiv.org/abs/2605.10158", published:"May 2026", summary:"Process reward models giving step-level supervision without per-step annotation."},
+  {short:"Survive or Collapse", title:"Survive or Collapse: Data Gating and Reward Grounding in Self-Play RL", inst:"UC Santa Barbara", type:"Academic", subarea:"RLVR", link:"https://arxiv.org/abs/2605.22217", published:"May 2026", summary:"Why self-play RL collapses; asymmetric roles of data gating and reward grounding."},
+  {short:"Reward Hacking (rubric)", title:"Reward Hacking in Rubric-Based Reinforcement Learning", inst:"Scale AI", type:"Industry", subarea:"Reward Modeling", link:"https://arxiv.org/abs/2605.12474", published:"May 2026", summary:"Studies reward hacking when open-ended RL relies on rubric-based rewards."},
+  {short:"Step Rejection FT", title:"Step Rejection Fine-Tuning: A Practical Distillation Recipe", inst:"JetBrains Research", type:"Industry", subarea:"Distillation", link:"https://arxiv.org/abs/2605.10674", published:"May 2026", summary:"Step-level rejection fine-tuning for agent training (e.g. SWE-bench)."},
+  {short:"Mechanistic SFT", title:"A Mechanistic Investigation of Supervised Fine-Tuning", inst:"Independent", type:"Independent", subarea:"SFT/Instruction Tuning", link:"https://arxiv.org/abs/2605.11426", published:"May 2026", summary:"Mechanistic study of what SFT actually changes; activations stay largely intact."},
+  {short:"OPSD Compaction", title:"OPSD Compresses What RLVR Teaches: A Post-RL Compaction Stage", inst:"Unknown", type:"Unknown", subarea:"Distillation", link:"https://arxiv.org/abs/2605.06188", published:"May 2026", summary:"On-policy self-distillation as a post-RL compaction stage; shorter responses, preserved accuracy."},
+  {short:"Prism (MM Tuning)", title:"Prism: Reproducible Infrastructure for Multimodal Continual Instruction Tuning", inst:"Nanjing University", type:"Academic", subarea:"SFT/Instruction Tuning", link:"https://arxiv.org/abs/2605.26110", published:"May 2026", summary:"Plug-in reproducible infrastructure for scalable multimodal continual instruction tuning."}
+];
+
+const CX = 500, CY = 430;
+const svgNS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("graph");
+
+const cluMap = new Map();
+for (const p of PAPERS) {
+  if (!cluMap.has(p.subarea)) cluMap.set(p.subarea, {name:p.subarea, papers:[]});
+  cluMap.get(p.subarea).papers.push(p);
+}
+const clusters = [...cluMap.values()];
+const R1 = 300, N = clusters.length;
+function el(t,a){ const e=document.createElementNS(svgNS,t); for(const k in a) e.setAttribute(k,a[k]); return e; }
+
+clusters.forEach((c,i)=>{ const ang=(-Math.PI/2)+(i*2*Math.PI/N); c.x=CX+R1*Math.cos(ang); c.y=CY+R1*Math.sin(ang); c.ang=ang; });
+clusters.forEach(c=>{ svg.appendChild(el("line",{x1:CX,y1:CY,x2:c.x,y2:c.y,class:"edge center"})); });
+
+clusters.forEach(c=>{
+  const k=c.papers.length, pr=58, spread=Math.min(1.5, 0.5+0.28*k);
+  c.papers.forEach((p,j)=>{
+    let pang = (k===1)? c.ang : c.ang - spread/2 + j*(spread/(k-1));
+    const rad = pr + (j%2)*22;
+    p._x=c.x+rad*Math.cos(pang); p._y=c.y+rad*Math.sin(pang);
+    svg.appendChild(el("line",{x1:c.x,y1:c.y,x2:p._x,y2:p._y,class:"edge"}));
+  });
+});
+
+clusters.forEach(c=>{
+  svg.appendChild(el("circle",{cx:c.x,cy:c.y,r:7,fill:"#1a1a1a"}));
+  const t=el("text",{x:c.x,y:c.y-13,class:"clu-label","text-anchor":"middle"});
+  t.textContent=c.name+" ("+c.papers.length+")"; svg.appendChild(t);
+});
+
+PAPERS.forEach(p=>{
+  const g=el("g",{class:"paper-node"});
+  g.appendChild(el("circle",{cx:p._x,cy:p._y,r:10,fill:TYPE_COLORS[p.type]||"#999",stroke:"#fff","stroke-width":2}));
+  g.addEventListener("click",()=>window.open(p.link,"_blank","noopener"));
+  g.addEventListener("mousemove",(e)=>showTip(e,p));
+  g.addEventListener("mouseleave",hideTip);
+  svg.appendChild(g);
+});
+
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:46,fill:"#1a1a1a"}));
+const c1=el("text",{x:CX,y:CY-4,class:"center-label","text-anchor":"middle"}); c1.textContent="Post-Training"; svg.appendChild(c1);
+const c2=el("text",{x:CX,y:CY+13,class:"center-label","text-anchor":"middle"}); c2.setAttribute("font-size","11"); c2.textContent="May 2026"; svg.appendChild(c2);
+
+const tip=document.getElementById("tip");
+function showTip(e,p){
+  tip.innerHTML='<div class="t-title">'+p.title+'</div>'+
+    '<div class="t-meta">'+p.inst+' · '+p.type+' · '+p.subarea+' · '+p.published+'</div>'+
+    '<div>'+p.summary+'</div>'+
+    '<div class="t-hint">Click to open on arXiv →</div>';
+  tip.style.opacity=1;
+  let x=e.clientX+14,y=e.clientY+14;
+  if(x+340>window.innerWidth) x=e.clientX-340;
+  if(y+150>window.innerHeight) y=e.clientY-150;
+  tip.style.left=x+"px"; tip.style.top=y+"px";
+}
+function hideTip(){ tip.style.opacity=0; }
+
+const byType={}; PAPERS.forEach(p=>byType[p.type]=(byType[p.type]||0)+1);
+document.getElementById("stats").innerHTML=
+  '<div class="stat"><b>'+PAPERS.length+'</b>papers</div>'+
+  '<div class="stat"><b>'+clusters.length+'</b>sub-areas</div>'+
+  '<div class="stat"><b>'+(byType["Academic"]||0)+'</b>academic</div>'+
+  '<div class="stat"><b>'+(byType["Mixed"]||0)+'</b>mixed</div>'+
+  '<div class="stat"><b>'+(byType["Industry"]||0)+'</b>industry</div>';
+const legendEl=document.getElementById("legend");
+Object.keys(TYPE_COLORS).forEach(t=>{ if(!byType[t])return; const s=document.createElement("span"); s.innerHTML='<span class="dot" style="background:'+TYPE_COLORS[t]+'"></span>'+t+' ('+byType[t]+')'; legendEl.appendChild(s); });
+</script>
+</body>
+</html>

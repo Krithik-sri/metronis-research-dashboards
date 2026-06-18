@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post-Training Research Dashboard</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f7f8fa; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 22px 18px 60px; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  .sub { color: #667; font-size: 13px; margin: 0 0 16px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .stat { background: #fff; border: 1px solid #e7e8ec; border-radius: 12px; padding: 10px 14px; font-size: 13px; min-width: 92px; }
+  .stat b { font-size: 20px; display: block; line-height: 1.1; }
+  .stat span { color: #778; }
+  .card { background: #fff; border: 1px solid #e7e8ec; border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 8px; }
+  .overall { font-size: 14px; color: #333; }
+  .note { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#6b5e2e; margin-top:10px; }
+  .controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
+  .controls input { flex:1; min-width:180px; padding:9px 12px; border:1px solid #d8dade; border-radius:10px; font-size:13px; }
+  .btn { border:1px solid #d8dade; background:#fff; border-radius:10px; padding:8px 12px; font-size:12.5px; cursor:pointer; }
+  .btn:hover { background:#f0f1f4; }
+  details.month > summary { cursor:pointer; list-style:none; font-size:16px; font-weight:700; padding:12px 14px; background:#fff; border:1px solid #e7e8ec; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+  details.month > summary::-webkit-details-marker { display:none; }
+  details.month > summary .count { font-size:12px; font-weight:600; color:#667; background:#eef0f3; border-radius:999px; padding:2px 9px; }
+  details.month[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+  .month-body { border:1px solid #e7e8ec; border-top:none; border-radius:0 0 12px 12px; padding:6px 14px 14px; margin-bottom:14px; background:#fff; }
+  .insight { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+  .insight h4 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:#8a7a3a; }
+  .insight ul { margin:6px 0 0; padding-left:18px; }
+  .insight li { margin:3px 0; }
+  details.sub > summary { cursor:pointer; list-style:none; font-size:13.5px; font-weight:650; padding:8px 10px; border-radius:8px; display:flex; align-items:center; gap:8px; }
+  details.sub > summary::-webkit-details-marker { display:none; }
+  details.sub > summary:hover { background:#f4f5f7; }
+  details.sub > summary .dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  details.sub > summary .c { font-size:11px; color:#889; }
+  details.paper > summary { cursor:pointer; list-style:none; padding:6px 10px; font-size:13px; display:flex; gap:8px; align-items:baseline; margin-left:14px; }
+  details.paper > summary::-webkit-details-marker { display:none; }
+  details.paper > summary:hover { background:#f4f5f7; border-radius:6px; }
+  details.paper > summary .pt { font-weight:600; }
+  .tag { font-size:10.5px; padding:1px 7px; border-radius:999px; border:1px solid #dcdee3; color:#556; white-space:nowrap; }
+  .pbody { padding:2px 12px 10px 34px; font-size:12.5px; color:#444; }
+  .pbody .meta { color:#778; font-size:11.5px; margin-bottom:4px; }
+  .pbody a { color:#2563eb; text-decoration:none; }
+  .typ { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+  .legend { font-size:12px; color:#667; margin:10px 0 0; display:flex; flex-wrap:wrap; gap:12px; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .foot { color:#99a; font-size:11.5px; margin-top:18px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Post-Training Research Dashboard</h1>
+  <p class="sub">Knowledge graph of the LLM/agent post-training literature — tree, summaries, and monthly insights. Topic: <b>Post-Training</b>, covering <b>Jun 2025 – May 2026</b>. Source: the Research Papers Notion database.</p>
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <h2>Overall summary</h2>
+    <div class="overall" id="overall"></div>
+    <div class="legend" id="legend"></div>
+    <div class="note" id="coverageNote"></div>
+  </div>
+
+  <div class="controls">
+    <input id="q" placeholder="Filter papers by title, institution, or sub-area…" oninput="applyFilter()">
+    <button class="btn" onclick="toggleAll(true)">Expand all</button>
+    <button class="btn" onclick="toggleAll(false)">Collapse all</button>
+  </div>
+
+  <div id="tree"></div>
+  <p class="foot">Tree: Month → Sub-area → Paper. Click a paper for its summary, affiliation, and link. Color dot = affiliation type. This snapshot renders the entries with full metadata; the always-live cumulative totals are the Notion "By Institution" board and "Papers by Source Type" chart. Rebuilt fully (all DB rows) on each scheduled automation run.</p>
+</div>
+
+<script>
+const TYPE_COLORS = { "Industry":"#e8833a","Academic":"#3b82f6","Independent":"#22a06b","Mixed":"#8b5cf6","Unknown":"#9aa0aa" };
+const MONTH_NAMES = {"2026-05":"May 2026","2026-04":"April 2026","2026-03":"March 2026","2026-02":"February 2026","2026-01":"January 2026","2025-12":"December 2025","2025-11":"November 2025","2025-10":"October 2025","2025-09":"September 2025","2025-08":"August 2025","2025-07":"July 2025","2025-06":"June 2025"};
+
+const PAPERS = [
+  // 2026-05
+  {m:"2026-05",t:"Beyond GRPO and On-Policy Distillation: Sparse-to-Dense Reward Principle",inst:"Princeton",ty:"Academic",sa:"Policy Optimization",link:"https://arxiv.org/abs/2605.12483",s:"Routes each verifiable example to the model/reward density where most informative; beats GRPO under scarce data."},
+  {m:"2026-05",t:"How Off-Policy Can GRPO Be? Mu-GRPO",inst:"Rice University",ty:"Academic",sa:"Policy Optimization",link:"https://arxiv.org/abs/2605.17570",s:"Pushes GRPO off-policy for more efficient RLVR."},
+  {m:"2026-05",t:"Signal Reshaping for GRPO in Weak-Feedback Agentic Code Repair",inst:"CUHK / SYSU / Tencent",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2605.07276",s:"GRPO signal reshaping for a weak-feedback agentic code-repair environment."},
+  {m:"2026-05",t:"MASS-DPO: Multi-negative Active Sample Selection for DPO",inst:"UC San Diego / Adobe",ty:"Mixed",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2605.10784",s:"Multi-negative active sample selection for DPO under Plackett-Luce."},
+  {m:"2026-05",t:"Gradient-Gated DPO",inst:"University of Windsor",ty:"Academic",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2605.02626",s:"Gradient gating to stabilize DPO."},
+  {m:"2026-05",t:"EvoPref: Evolutionary Optimization for Diverse LLM Alignment",inst:"HKU / Stellaris AI",ty:"Mixed",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2605.09777",s:"Non-gradient evolutionary optimization for diverse alignments, countering preference collapse."},
+  {m:"2026-05",t:"AdaDPO: Self-Adaptive DPO with Balanced Gradient Updates",inst:"Incept Labs / Titan",ty:"Industry",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2605.28440",s:"Self-adaptive DPO balancing asymmetric chosen/rejected gradients."},
+  {m:"2026-05",t:"ξ-DPO: DPO via Ratio Reward Margin",inst:"Northwestern Polytechnical U.",ty:"Academic",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2605.10981",s:"Reference-free preference optimization via ratio reward margin."},
+  {m:"2026-05",t:"Explaining and Preventing Alignment Collapse in Iterative RLHF",inst:"Inria / ENS PSL / UC Berkeley",ty:"Academic",sa:"RLHF",link:"https://arxiv.org/abs/2605.04266",s:"Why iterative RLHF collapses when the RM is retrained on policy data, and how to prevent it."},
+  {m:"2026-05",t:"Implicit Reward Overfitting and Low-rank Dynamics in RLVR",inst:"Lanzhou / NUS / BIT",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2605.06523",s:"RLVR reasoning gains concentrate in a low-rank subspace."},
+  {m:"2026-05",t:"Survive or Collapse: Data Gating and Reward Grounding in Self-Play RL",inst:"UC Santa Barbara",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2605.22217",s:"Why self-play RL collapses; roles of data gating and reward grounding."},
+  {m:"2026-05",t:"RewardHarness: Self-Evolving Agentic Post-Training",inst:"UBC / Vector / CMU + Kuaishou",ty:"Mixed",sa:"Reward Modeling",link:"https://arxiv.org/abs/2605.08703",s:"Self-evolving agentic reward modeling without large-scale annotation."},
+  {m:"2026-05",t:"Unsupervised Process Reward Models",inst:"EPFL",ty:"Academic",sa:"Reward Modeling",link:"https://arxiv.org/abs/2605.10158",s:"Step-level process reward models without per-step annotation."},
+  {m:"2026-05",t:"Reward Hacking in Rubric-Based Reinforcement Learning",inst:"Scale AI",ty:"Industry",sa:"Reward Modeling",link:"https://arxiv.org/abs/2605.12474",s:"Reward hacking when open-ended RL relies on rubric-based rewards."},
+  {m:"2026-05",t:"Preference-Based Self-Distillation: Beyond KL Matching",inst:"Penn State / ByteDance",ty:"Mixed",sa:"Distillation",link:"https://arxiv.org/abs/2605.05040",s:"On-policy distillation beyond KL via reward regularization."},
+  {m:"2026-05",t:"On-Policy Optimization + Distillation for Long-Context Reasoning",inst:"IST Lisboa / TransPerfect",ty:"Mixed",sa:"Distillation",link:"https://arxiv.org/abs/2605.12227",s:"Combines on-policy RL and distillation for long-context reasoning."},
+  {m:"2026-05",t:"Anti-Self-Distillation for Reasoning RL via PMI",inst:"Xiaohongshu / CASIA",ty:"Mixed",sa:"Distillation",link:"https://arxiv.org/abs/2605.11609",s:"PMI to counter degenerate self-distillation in reasoning RL."},
+  {m:"2026-05",t:"Self-Verified Distillation: LLM as Its Own Synthetic Data Pipeline",inst:"Stanford",ty:"Academic",sa:"Distillation",link:"https://arxiv.org/abs/2605.26132",s:"LLM self-improves from unlabeled prompts via self-verified distillation."},
+  {m:"2026-05",t:"Step Rejection Fine-Tuning: A Practical Distillation Recipe",inst:"JetBrains Research",ty:"Industry",sa:"Distillation",link:"https://arxiv.org/abs/2605.10674",s:"Step-level rejection fine-tuning for agent training (e.g. SWE-bench)."},
+  {m:"2026-05",t:"OPSD Compresses What RLVR Teaches: Post-RL Compaction",inst:"Unknown",ty:"Unknown",sa:"Distillation",link:"https://arxiv.org/abs/2605.06188",s:"On-policy self-distillation as post-RL compaction; shorter responses, preserved accuracy."},
+  {m:"2026-05",t:"EnvFactory: Tool-Use Agents via Executable Environment Synthesis",inst:"HKUST-GZ / Huawei / Cambridge / UCL",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2605.18703",s:"Synthesizes executable environments at scale for robust agentic RL."},
+  {m:"2026-05",t:"Self-Distilled Agentic Reinforcement Learning",inst:"Zhejiang / Meituan / Tsinghua",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2605.15155",s:"On-policy self-distillation densifies coarse trajectory rewards in agentic RL."},
+  {m:"2026-05",t:"Polar: Agentic RL on Any Harness at Scale",inst:"NVIDIA",ty:"Industry",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2605.24220",s:"Runs agentic RL across arbitrary harnesses at scale."},
+  {m:"2026-05",t:"RL for Multi-Agent Systems through Orchestration Traces",inst:"Independent",ty:"Independent",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2605.02801",s:"Trace-driven RL for multi-agent LLM systems."},
+  {m:"2026-05",t:"LongTraceRL: Long-Context Reasoning from Search Agent Trajectories",inst:"Tsinghua University",ty:"Academic",sa:"Reasoning",link:"https://arxiv.org/abs/2605.31584",s:"Rubric-reward RL from search-agent trajectories."},
+  {m:"2026-05",t:"Zipping the Thought: Compressed Reasoning Data in Post-Training",inst:"Penn State",ty:"Academic",sa:"Reasoning",link:"https://arxiv.org/abs/2605.28008",s:"When/how compressed CoT data helps post-training."},
+  {m:"2026-05",t:"Learn to Think: Vision-Aware Self-Improvement for Multimodal Reasoning",inst:"Wuhan / Sydney / NTU",ty:"Academic",sa:"Reasoning",link:"https://arxiv.org/abs/2605.11931",s:"Vision-aware self-improvement to get reasoning traces for MLLMs."},
+  {m:"2026-05",t:"Post-Training is About States, Not Tokens",inst:"Independent",ty:"Independent",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2605.22731",s:"State-distribution view unifying SFT, RL, and on-policy distillation."},
+  {m:"2026-05",t:"A Mechanistic Investigation of Supervised Fine-Tuning",inst:"Independent",ty:"Independent",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2605.11426",s:"SFT leaves hidden activations largely unchanged; probes what SFT alters."},
+  {m:"2026-05",t:"Prism: Multimodal Continual Instruction Tuning Infrastructure",inst:"Nanjing University",ty:"Academic",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2605.26110",s:"Reproducible infrastructure for scalable multimodal continual instruction tuning."},
+  {m:"2026-05",t:"Guiding Post-training Data Engineering with SAE Model Internals",inst:"Tsinghua University",ty:"Academic",sa:"Data/Synthetic",link:"https://arxiv.org/abs/2605.27354",s:"Sparse-autoencoder internals guide post-training data engineering."},
+  {m:"2026-05",t:"Dr. Post-Training: A Data Regularization Perspective",inst:"UIUC / Michigan",ty:"Academic",sa:"Data/Synthetic",link:"https://arxiv.org/abs/2605.07063",s:"Data-regularization view of mixing scarce high-fidelity with abundant general data."},
+  {m:"2026-05",t:"LLM Benchmark Datasets Should Be Contamination-Resistant",inst:"Penn State",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2605.19999",s:"Argues for contamination-resistant benchmark design."},
+  // 2026-04
+  {m:"2026-04",t:"JURY-RL: Votes Propose, Proofs Dispose for Label-Free RLVR",inst:"Unknown",ty:"Unknown",sa:"RLVR",link:"https://arxiv.org/abs/2604.25419",s:"Label-free RLVR: sampled answers vote to propose, proofs dispose."},
+  {m:"2026-04",t:"Where Hindsight Credit Can Reside: Signed-Capacity View of Token Updates in RLVR",inst:"HKUST-GZ / Huawei",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2604.11056",s:"Signed-capacity analysis of token-level credit assignment in RLVR."},
+  {m:"2026-04",t:"SPPO: Sequence-Level PPO for Long-Horizon Reasoning",inst:"SUSTech / MSRA / Tsinghua",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2604.08865",s:"Sequence-level PPO for long-horizon reasoning with verifiable rewards."},
+  {m:"2026-04",t:"SFT-then-RL Outperforms Mixed-Policy Methods for LLM Reasoning",inst:"ETH Zürich / EPFL / AI2",ty:"Mixed",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2604.23747",s:"Standard SFT-then-RL beats recent blended mixed-policy pipelines."},
+  {m:"2026-04",t:"A Survey of On-Policy Distillation for LLMs",inst:"Tencent",ty:"Industry",sa:"Distillation",link:"https://arxiv.org/abs/2604.00626",s:"Survey of on-policy distillation for transferring capabilities to smaller students."},
+  {m:"2026-04",t:"Beyond SFT-to-RL: Black-Box On-Policy Distillation for Multimodal RL",inst:"HKUST-GZ / Tsinghua / NTU",ty:"Academic",sa:"Distillation",link:"https://arxiv.org/abs/2604.28123",s:"Black-box on-policy distillation as pre-alignment before RLVR for multimodal models."},
+  {m:"2026-04",t:"Agentic Tool Use in Large Language Models",inst:"HIT-Shenzhen / TikTok",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2604.00835",s:"Survey/analysis of agentic tool use in LLMs."},
+  {m:"2026-04",t:"Exploration Hacking: Can LLMs Learn to Resist RL Training?",inst:"MATS / UCSD / Anthropic / DeepMind",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2604.28182",s:"Models can under-explore to resist RL training — a safety concern."},
+  {m:"2026-04",t:"Bridging SFT and RL: Dynamic Policy Optimization for Robust Reasoning",inst:"Tsinghua-SZ / ZTE / CQUPT",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2604.08926",s:"Dynamic policy optimization bridging SFT stability and RL exploration."},
+  // 2026-02
+  {m:"2026-02",t:"PyVision-RL: Forging Open Agentic Vision Models via RL",inst:"CUHK / Tsinghua / Shanghai AI Lab / UMD / Rice",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2602.20739",s:"Trains open agentic vision models with RL, countering interaction collapse."},
+  // 2026-01
+  {m:"2026-01",t:"TL-GRPO: Turn-Level RL for Reasoning-Guided Iterative Optimization",inst:"Unknown",ty:"Unknown",sa:"Policy Optimization",link:"https://arxiv.org/abs/2601.16480",s:"Turn-level GRPO for tool-integrated multi-turn reasoning."},
+  {m:"2026-01",t:"PaperSearchQA: Search and Reason over Scientific Papers with RLVR",inst:"Unknown",ty:"Unknown",sa:"RLVR",link:"https://arxiv.org/abs/2601.18207",s:"Trains search agents to reason over scientific papers with RLVR."},
+  {m:"2026-01",t:"Golden Goose: Synthesizing Unlimited RLVR Tasks from Unverifiable Text",inst:"Unknown",ty:"Unknown",sa:"RLVR",link:"https://arxiv.org/abs/2601.22975",s:"Synthesizes unlimited verifiable RL tasks from unverifiable internet text."},
+  // 2025-12
+  {m:"2025-12",t:"Evaluating Parameter-Efficient Methods for RLVR",inst:"Zhejiang / INSAIT / Brown / HKUST",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2512.23165",s:"Systematic evaluation of PEFT methods under the RLVR paradigm."},
+  {m:"2025-12",t:"Exploration vs Exploitation: Rethinking RLVR via Clipping, Entropy, Spurious Reward",inst:"NYU / CUHK-SZ / Columbia / DAMO",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2512.16912",s:"Examines exploration-exploitation trade-off in RLVR."},
+  // 2025-11
+  {m:"2025-11",t:"The Path Not Taken: RLVR Provably Learns Off the Principals",inst:"Meta / UT Austin",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2511.08567",s:"Explains why RLVR modifies only a small fraction of parameters."},
+  {m:"2025-11",t:"GRPO-RM: Fine-Tuning Representation Models via GRPO",inst:"Unknown",ty:"Unknown",sa:"Policy Optimization",link:"https://arxiv.org/abs/2511.15256",s:"Adapts GRPO to fine-tune representation/embedding models."},
+  {m:"2025-11",t:"Agent-R1: Unified Modular Framework for Agentic RL",inst:"Unknown",ty:"Unknown",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2511.14460",s:"Unified, modular framework for agentic RL across diverse tasks."},
+  {m:"2025-11",t:"Soft Adaptive Policy Optimization",inst:"Alibaba",ty:"Industry",sa:"Policy Optimization",link:"https://arxiv.org/abs/2511.20347",s:"Soft, adaptive policy optimization for stable RL fine-tuning."},
+  // 2025-10
+  {m:"2025-10",t:"Part II: ROLL Flash — Accelerating RLVR and Agentic Training with Asynchrony",inst:"Alibaba / HKUST / SJTU",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2510.11345",s:"Accelerates RLVR and agentic RL training via asynchronous execution."},
+  {m:"2025-10",t:"ExGRPO: Learning to Reason from Experience",inst:"Unknown",ty:"Unknown",sa:"RLVR",link:"https://arxiv.org/abs/2510.02245",s:"Reuses rollout experience to improve reasoning training efficiency."},
+  {m:"2025-10",t:"Training-Free Group Relative Policy Optimization",inst:"Tencent",ty:"Industry",sa:"Policy Optimization",link:"https://arxiv.org/abs/2510.08191",s:"Training-free GRPO variant to adapt LLM agents without gradient updates."},
+  {m:"2025-10",t:"Agentic Entropy-Balanced Policy Optimization",inst:"Renmin / Kuaishou",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2510.14545",s:"Entropy-balanced PO for long-horizon web-agent RL."},
+  {m:"2025-10",t:"In-the-Flow Agentic System Optimization for Planning and Tool Use",inst:"Stanford / UCSD / Texas A&M",ty:"Academic",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2510.05592",s:"Optimizes agentic systems in-the-flow rather than a single monolithic policy."},
+  {m:"2025-10",t:"Enhancing LLM Reasoning with Reward Models: An Analytical Survey",inst:"Oxford / CityU HK / Li Auto",ty:"Mixed",sa:"Reward Modeling",link:"https://arxiv.org/abs/2510.01925",s:"Survey of how reward models guide RL fine-tuning and inference-time selection."},
+  // 2025-09
+  {m:"2025-09",t:"DCPO: Dynamic Clipping Policy Optimization",inst:"Baichuan",ty:"Industry",sa:"Policy Optimization",link:"https://arxiv.org/abs/2509.02333",s:"Dynamic clipping policy optimization addressing GRPO limitations."},
+  {m:"2025-09",t:"Single-stream Policy Optimization",inst:"Tencent",ty:"Industry",sa:"Policy Optimization",link:"https://arxiv.org/abs/2509.13232",s:"Single-stream policy-gradient optimization avoiding group-baseline pitfalls of GRPO."},
+  {m:"2025-09",t:"A Survey of Reinforcement Learning for Large Reasoning Models",inst:"UW / Shanghai AI Lab / Tsinghua +",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2509.08827",s:"Broad multi-lab survey of RL for reasoning-focused LLMs."},
+  // 2025-08
+  {m:"2025-08",t:"Beyond Pass@1: Self-Play with Variational Problem Synthesis Sustains RLVR",inst:"UCLA / Microsoft / HKUST / CAS",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2508.14029",s:"Self-play with problem synthesis sustains RLVR gains beyond pass@1."},
+  {m:"2025-08",t:"Depth-Breadth Synergy in RLVR: Adaptive Exploration",inst:"SYSU / HKUST-GZ / MBZUAI / ETH",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2508.13755",s:"Balances depth and breadth of exploration for RLVR reasoning gains."},
+  {m:"2025-08",t:"From Trial-and-Error to Improvement: LLM Exploration in RLVR",inst:"Renmin University of China",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2508.07534",s:"Systematic analysis of exploration mechanisms driving RLVR improvements."},
+  {m:"2025-08",t:"GTPO and GRPO-S: Token/Sequence-Level Reward Shaping with Policy Entropy",inst:"ByteDance / PKU / HKUST",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2508.04349",s:"Reward shaping with policy entropy to improve credit assignment over GRPO/DAPO."},
+  {m:"2025-08",t:"Part I: Tricks or Traps? A Deep Dive into RL for LLM Reasoning",inst:"Alibaba / Nanjing / PKU / HKUST",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2508.08221",s:"Empirical deep-dive into which tricks help or hurt RL for reasoning."},
+  // 2025-07
+  {m:"2025-07",t:"Agentic Reinforced Policy Optimization (ARPO)",inst:"Renmin / Kuaishou",ty:"Mixed",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2507.19849",s:"Extends RLVR from single-turn to multi-turn agentic settings."},
+  {m:"2025-07",t:"Perception-Aware Policy Optimization for Multimodal Reasoning",inst:"UIUC / Alibaba",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2507.06448",s:"Perception-aware RLVR PO for multi-step multimodal reasoning."},
+  {m:"2025-07",t:"The Invisible Leash: Why RLVR May or May Not Escape Its Origin",inst:"UW / Stanford / UTokyo / RIKEN",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2507.14843",s:"Whether RLVR can move models beyond their base distribution."},
+  {m:"2025-07",t:"EDGE-GRPO: Entropy-Driven GRPO with Guided Error Correction",inst:"Beihang University",ty:"Academic",sa:"Policy Optimization",link:"https://arxiv.org/abs/2507.21848",s:"Entropy-driven GRPO with guided error correction for advantage diversity."},
+  {m:"2025-07",t:"Supervised Fine-Tuning on Curated Data is Reinforcement Learning",inst:"Independent",ty:"Independent",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2507.12856",s:"Shows SFT on curated data is a form of RL, and improves on it."},
+  {m:"2025-07",t:"Omni-Thinker: Scaling Multi-Task RL with Hybrid Reward and Task Scheduling",inst:"Huawei Noah's Ark / McGill / Mila",ty:"Mixed",sa:"Policy Optimization",link:"https://arxiv.org/abs/2507.14783",s:"Unified multi-task RL with hybrid rewards and task scheduling."},
+  {m:"2025-07",t:"Kimi K2: Open Agentic Intelligence",inst:"Moonshot AI",ty:"Industry",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2507.20534",s:"1T-param MoE with MuonClip optimizer and an agentic post-training recipe."},
+  // 2025-06
+  {m:"2025-06",t:"Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive RL for Reasoning",inst:"Tsinghua / Alibaba",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2506.01939",s:"High-entropy minority tokens drive most gains in RLVR for reasoning."},
+  {m:"2025-06",t:"RLPR: Extrapolating RLVR to General Domains without Verifiers",inst:"UIUC / NUS / Tsinghua +",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2506.18254",s:"Extends RLVR beyond verifiable domains without explicit verifiers."},
+  {m:"2025-06",t:"Spurious Rewards: Rethinking Training Signals in RLVR",inst:"UW / AI2 / UC Berkeley",ty:"Academic",sa:"RLVR",link:"https://arxiv.org/abs/2506.10947",s:"RLVR can elicit strong reasoning even with spurious/near-random rewards."},
+  {m:"2025-06",t:"RLVR Implicitly Incentivizes Correct Reasoning in Base LLMs",inst:"UCLA / CUHK / PKU / Microsoft",ty:"Mixed",sa:"RLVR",link:"https://arxiv.org/abs/2506.14245",s:"Argues RLVR (GRPO) implicitly incentivizes correct CoT in base models."},
+  {m:"2025-06",t:"Agent-RLVR: Training Software Engineering Agents via Guidance and Environment Rewards",inst:"Scale AI",ty:"Industry",sa:"Agentic/RL Env",link:"https://arxiv.org/abs/2506.11425",s:"Makes RLVR effective for SWE agents via guidance and environment rewards."},
+  {m:"2025-06",t:"Uni-DPO: Unified Dynamic Preference Optimization",inst:"CUHK / Tsinghua / Tencent",ty:"Mixed",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2506.10054",s:"Unified paradigm for dynamic preference optimization generalizing DPO."},
+  {m:"2025-06",t:"Explicit Preference Optimization: No Need for an Implicit Reward Model",inst:"Fudan / CUHK / AWS",ty:"Mixed",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2506.07492",s:"Preference optimization avoiding the implicit reward-model assumption of DPO."},
+  {m:"2025-06",t:"Doubly Robust Alignment for Large Language Models",inst:"Unknown",ty:"Unknown",sa:"Preference/Alignment",link:"https://arxiv.org/abs/2506.01183",s:"Doubly-robust RLHF method robust to reward/preference misspecification."},
+  {m:"2025-06",t:"AceReason-Nemotron 1.1: Math and Code Reasoning through SFT and RL Synergy",inst:"NVIDIA",ty:"Industry",sa:"SFT/Instruction Tuning",link:"https://arxiv.org/abs/2506.13284",s:"Studies SFT+RL synergy for math/code reasoning models."}
+];
+
+const INSIGHTS = {
+  overall: "Across June 2025 – May 2026, LLM post-training matured along four axes. (1) <b>RLVR went from recipe to science</b>: works probed why it changes few parameters (Meta/UT Austin), whether it escapes the base model (UW/Stanford), and showed it can work with <i>spurious rewards</i> (UW/AI2/Berkeley) — while reward integrity drew scrutiny (reward hacking, alignment collapse, exploration hacking). (2) <b>Policy optimization proliferated around and beyond GRPO/PPO/DPO</b>: off-policy GRPO, sequence-level PPO, single-stream and dynamic-clipping variants, entropy-based reward shaping, plus a wave of DPO successors (AdaDPO, ξ-DPO, EvoPref). (3) <b>On-policy distillation rose as an RL alternative/complement</b> (Tencent survey, self-verified, preference-based, post-RL compaction). (4) <b>Agentic / RL-environment training scaled</b> — NVIDIA's Polar, EnvFactory, ARPO, async training (Alibaba ROLL Flash). Volume is led by academia and Chinese labs, with sharp industry contributions from NVIDIA, Tencent, Alibaba, ByteDance, Scale AI, Meta, Moonshot, Baichuan, and Anthropic/DeepMind.",
+  months: {
+    "2026-05":{summary:"DPO-successor proliferation, on-policy distillation consolidation, sharper reward-signal scrutiny, and continued agentic-RL scaling.",highlights:["<b>NVIDIA</b> shipped <i>Polar</i> (agentic RL on any harness at scale).","<b>Scale AI</b> flagged <i>reward hacking</i> in rubric-based RL; <b>EPFL</b> introduced <i>unsupervised process reward models</i>.","Preference optimization fragmented: AdaDPO (Incept Labs), ξ-DPO, EvoPref (HKU+Stellaris).","On-policy distillation surged (Stanford self-verified; OPSD post-RL compaction).","Unifying view: <i>Post-Training is About States, Not Tokens</i> (independent)."]},
+    "2026-04":{summary:"SFT-vs-RL relationship and RL safety/robustness, plus credit-assignment and distillation.",highlights:["<b>ETH/EPFL/AI2</b>: <i>SFT-then-RL outperforms</i> blended mixed-policy pipelines.","<b>Anthropic/DeepMind</b> (+UCSD/MATS): <i>exploration hacking</i> — models resisting RL training.","<b>Tencent</b> published a survey of on-policy distillation, framing May's dominant theme."]},
+    "2026-02":{summary:"Agentic multimodal RL.",highlights:["<b>PyVision-RL</b> (CUHK/Tsinghua/Shanghai AI Lab) trains agentic vision models with RL, countering interaction collapse."]},
+    "2026-01":{summary:"Scaling RLVR data and turn-level optimization.",highlights:["<i>Golden Goose</i> synthesizes unlimited verifiable RL tasks from unverifiable internet text.","TL-GRPO brings turn-level RL to tool-integrated reasoning; PaperSearchQA trains search agents with RLVR."]},
+    "2025-12":{summary:"RLVR efficiency and dynamics.",highlights:["Evaluation of <b>parameter-efficient</b> methods under RLVR.","NYU/Columbia/DAMO rethink the exploration-exploitation trade-off (clipping, entropy, spurious reward)."]},
+    "2025-11":{summary:"Theory of RLVR plus agentic-RL frameworks.",highlights:["<b>Meta/UT Austin</b>: RLVR <i>provably learns off the principals</i> — why so few parameters change.","<b>Alibaba</b>'s Soft Adaptive PO; Agent-R1 modular agentic-RL framework; GRPO extended to representation models."]},
+    "2025-10":{summary:"RL systems/infrastructure and agentic optimization.",highlights:["<b>Alibaba</b>'s ROLL Flash brings asynchrony to RLVR/agentic training; <b>Tencent</b>'s training-free GRPO.","Renmin/Kuaishou entropy-balanced agentic PO; Stanford in-the-flow agentic system optimization."]},
+    "2025-09":{summary:"Policy-optimization consolidation and a landmark survey.",highlights:["<b>Tencent</b> (single-stream PO) and <b>Baichuan</b> (DCPO) refine GRPO.","A large multi-lab <i>Survey of RL for Large Reasoning Models</i>."]},
+    "2025-08":{summary:"RLVR exploration deep-dives and reward shaping.",highlights:["Self-play with variational problem synthesis sustains RLVR (UCLA/Microsoft).","<b>ByteDance</b>'s GTPO/GRPO-S reward shaping; <b>Alibaba</b>'s 'Tricks or Traps' empirical guide."]},
+    "2025-07":{summary:"GRPO/PPO variants bloom and agentic recipes emerge.",highlights:["<b>Moonshot AI</b>'s Kimi K2 (agentic, MuonClip optimizer).","EDGE-GRPO (Beihang); 'SFT on curated data is RL' reframing; Renmin/Kuaishou ARPO for agents."]},
+    "2025-06":{summary:"RLVR scrutiny intensifies; agentic RLVR arrives.",highlights:["<b>UW/AI2/Berkeley</b>: RLVR works even with <i>spurious rewards</i>.","<b>Scale AI</b>'s Agent-RLVR brings RLVR to software-engineering agents; <b>NVIDIA</b>'s AceReason on SFT+RL synergy.","Tsinghua/Alibaba locate gains in high-entropy minority tokens."]}
+  }
+};
+
+const insts = new Set(PAPERS.map(p=>p.inst));
+const byType = {}; PAPERS.forEach(p=>byType[p.ty]=(byType[p.ty]||0)+1);
+const months = [...new Set(PAPERS.map(p=>p.m))].sort().reverse();
+document.getElementById("stats").innerHTML =
+  '<div class="stat"><b>'+PAPERS.length+'</b><span>papers (detailed)</span></div>'+
+  '<div class="stat"><b>'+months.length+'</b><span>months</span></div>'+
+  '<div class="stat"><b>'+insts.size+'</b><span>institutions</span></div>'+
+  '<div class="stat"><b>'+(byType["Academic"]||0)+'</b><span>academic</span></div>'+
+  '<div class="stat"><b>'+(byType["Mixed"]||0)+'</b><span>mixed</span></div>'+
+  '<div class="stat"><b>'+(byType["Industry"]||0)+'</b><span>industry</span></div>';
+document.getElementById("overall").innerHTML = INSIGHTS.overall;
+document.getElementById("coverageNote").innerHTML = "<b>Coverage note:</b> this view renders the "+PAPERS.length+" post-training papers with full metadata (curated Jun 2025 – May 2026). The database also contains additional backfilled entries from automated runs — notably a large March 2026 batch — that aren't individually shown here. The Notion <b>By Institution</b> board and <b>Papers by Source Type</b> chart reflect the full cumulative totals, and the scheduled tasks' dashboard regeneration (which reads every DB row) produces the complete version.";
+const legendEl = document.getElementById("legend");
+Object.keys(TYPE_COLORS).forEach(t=>{ if(!byType[t])return; const s=document.createElement("span"); s.innerHTML='<span class="typ" style="background:'+TYPE_COLORS[t]+'"></span>'+t+' ('+byType[t]+')'; legendEl.appendChild(s); });
+
+const SUBORDER = ["Policy Optimization","Preference/Alignment","RLHF","RLVR","Reward Modeling","Distillation","Agentic/RL Env","Reasoning","SFT/Instruction Tuning","Data/Synthetic","Eval/Benchmark","Other"];
+function esc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const tree = document.getElementById("tree");
+months.forEach((m,mi)=>{
+  const mps = PAPERS.filter(p=>p.m===m);
+  const groups = {}; mps.forEach(p=>{ (groups[p.sa]=groups[p.sa]||[]).push(p); });
+  const det = document.createElement("details"); det.className="month"; if(mi===0) det.open=true;
+  const sum = document.createElement("summary");
+  sum.innerHTML = (MONTH_NAMES[m]||m)+' <span class="count">'+mps.length+' papers</span>';
+  det.appendChild(sum);
+  const body = document.createElement("div"); body.className="month-body";
+  const ins = INSIGHTS.months[m];
+  if(ins){ let h='<div class="insight"><h4>Month summary</h4><div>'+ins.summary+'</div>'; if(ins.highlights&&ins.highlights.length){ h+='<h4 style="margin-top:8px">Insights — who did what</h4><ul>'+ins.highlights.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; } h+='</div>'; body.insertAdjacentHTML('beforeend',h); }
+  SUBORDER.filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!SUBORDER.includes(k))).forEach(k=>{
+    const arr=groups[k]; if(!arr)return;
+    const sd=document.createElement("details"); sd.className="sub";
+    const ss=document.createElement("summary");
+    ss.innerHTML='<span class="dot" style="background:'+(TYPE_COLORS[arr[0].ty]||'#999')+'"></span>'+k+' <span class="c">('+arr.length+')</span>';
+    sd.appendChild(ss);
+    arr.forEach(p=>{
+      const pd=document.createElement("details"); pd.className="paper";
+      const psum=document.createElement("summary");
+      psum.innerHTML='<span class="typ" style="background:'+(TYPE_COLORS[p.ty]||'#999')+'"></span><span class="pt">'+esc(p.t)+'</span> <span class="tag">'+esc(p.inst)+'</span>';
+      pd.appendChild(psum);
+      const pb=document.createElement("div"); pb.className="pbody";
+      pb.innerHTML='<div class="meta">'+esc(p.inst)+' · '+p.ty+' · '+p.sa+' · '+(MONTH_NAMES[p.m]||p.m)+'</div>'+esc(p.s)+'<div style="margin-top:5px"><a href="'+p.link+'" target="_blank" rel="noopener">'+p.link+'</a></div>';
+      pd.appendChild(pb);
+      pd.dataset.search=(p.t+' '+p.inst+' '+p.sa+' '+p.s).toLowerCase();
+      sd.appendChild(pd);
+    });
+    body.appendChild(sd);
+  });
+  det.appendChild(body); tree.appendChild(det);
+});
+function toggleAll(open){ document.querySelectorAll("details").forEach(d=>d.open=open); }
+function applyFilter(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  document.querySelectorAll("details.paper").forEach(pd=>{ const hit=!q||pd.dataset.search.includes(q); pd.style.display=hit?"":"none"; if(q&&hit){ pd.open=true; const s=pd.closest("details.sub"); if(s)s.open=true; const mo=pd.closest("details.month"); if(mo)mo.open=true; } });
+  if(!q){ document.querySelectorAll("details.sub,details.paper").forEach(d=>d.open=false); document.querySelectorAll("details.month").forEach((d,i)=>d.open=(i===0)); }
+}
+</script>
+</body>
+</html>

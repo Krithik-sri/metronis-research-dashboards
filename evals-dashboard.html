@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evals Research Dashboard</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f7f8fa; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 22px 18px 60px; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  .sub { color: #667; font-size: 13px; margin: 0 0 16px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .stat { background: #fff; border: 1px solid #e7e8ec; border-radius: 12px; padding: 10px 14px; font-size: 13px; min-width: 92px; }
+  .stat b { font-size: 20px; display: block; line-height: 1.1; }
+  .stat span { color: #778; }
+  .card { background: #fff; border: 1px solid #e7e8ec; border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 8px; }
+  .overall { font-size: 14px; color: #333; }
+  .note { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#6b5e2e; margin-top:10px; }
+  .controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
+  .controls input { flex:1; min-width:180px; padding:9px 12px; border:1px solid #d8dade; border-radius:10px; font-size:13px; }
+  .btn { border:1px solid #d8dade; background:#fff; border-radius:10px; padding:8px 12px; font-size:12.5px; cursor:pointer; }
+  .btn:hover { background:#f0f1f4; }
+  details.month > summary { cursor:pointer; list-style:none; font-size:16px; font-weight:700; padding:12px 14px; background:#fff; border:1px solid #e7e8ec; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+  details.month > summary::-webkit-details-marker { display:none; }
+  details.month > summary .count { font-size:12px; font-weight:600; color:#667; background:#eef0f3; border-radius:999px; padding:2px 9px; }
+  details.month[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+  .month-body { border:1px solid #e7e8ec; border-top:none; border-radius:0 0 12px 12px; padding:6px 14px 14px; margin-bottom:14px; background:#fff; }
+  .insight { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+  .insight h4 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:#8a7a3a; }
+  .insight ul { margin:6px 0 0; padding-left:18px; }
+  .insight li { margin:3px 0; }
+  details.sub > summary { cursor:pointer; list-style:none; font-size:13.5px; font-weight:650; padding:8px 10px; border-radius:8px; display:flex; align-items:center; gap:8px; }
+  details.sub > summary::-webkit-details-marker { display:none; }
+  details.sub > summary:hover { background:#f4f5f7; }
+  details.sub > summary .dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  details.sub > summary .c { font-size:11px; color:#889; }
+  details.paper > summary { cursor:pointer; list-style:none; padding:6px 10px; font-size:13px; display:flex; gap:8px; align-items:baseline; margin-left:14px; }
+  details.paper > summary::-webkit-details-marker { display:none; }
+  details.paper > summary:hover { background:#f4f5f7; border-radius:6px; }
+  details.paper > summary .pt { font-weight:600; }
+  .tag { font-size:10.5px; padding:1px 7px; border-radius:999px; border:1px solid #dcdee3; color:#556; white-space:nowrap; }
+  .pbody { padding:2px 12px 10px 34px; font-size:12.5px; color:#444; }
+  .pbody .meta { color:#778; font-size:11.5px; margin-bottom:4px; }
+  .pbody a { color:#2563eb; text-decoration:none; }
+  .typ { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+  .legend { font-size:12px; color:#667; margin:10px 0 0; display:flex; flex-wrap:wrap; gap:12px; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .foot { color:#99a; font-size:11.5px; margin-top:18px; line-height:1.5; }
+  .nav { font-size:12.5px; margin-bottom:14px; }
+  .nav a { color:#2563eb; text-decoration:none; margin-right:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">&larr; All dashboards</a></div>
+  <h1>Evals Research Dashboard</h1>
+  <p class="sub">Knowledge graph of LLM/agent <b>evaluation</b> research — tree, summaries, and monthly insights. Topic: <b>Evals</b>, covering <b>Jun 2025 – May 2026</b>. Source: the Research Papers Notion database.</p>
+  <div class="stats" id="stats"></div>
+  <div class="card">
+    <h2>Overall summary</h2>
+    <div class="overall" id="overall"></div>
+    <div class="legend" id="legend"></div>
+    <div class="note" id="coverageNote"></div>
+  </div>
+  <div class="controls">
+    <input id="q" placeholder="Filter papers by title, institution, or sub-area…" oninput="applyFilter()">
+    <button class="btn" onclick="toggleAll(true)">Expand all</button>
+    <button class="btn" onclick="toggleAll(false)">Collapse all</button>
+  </div>
+  <div id="tree"></div>
+  <p class="foot">Tree: Month → Sub-area → Paper. Click a paper for its summary, affiliation, and link. Color dot = affiliation type. Rebuilt fully (all DB rows) on each scheduled run of the evals task.</p>
+</div>
+<script>
+const TYPE_COLORS = { "Industry":"#e8833a","Academic":"#3b82f6","Independent":"#22a06b","Mixed":"#8b5cf6","Unknown":"#9aa0aa" };
+const MONTH_NAMES = {"2026-05":"May 2026","2026-04":"April 2026","2026-03":"March 2026","2026-02":"February 2026","2026-01":"January 2026","2025-12":"December 2025","2025-11":"November 2025","2025-10":"October 2025","2025-09":"September 2025","2025-08":"August 2025","2025-07":"July 2025","2025-06":"June 2025"};
+
+const PAPERS = [
+  {m:"2026-05",t:"FutureSim: Replaying World Events to Evaluate Adaptive Agents",inst:"Unknown",ty:"Unknown",sa:"Agent Eval",link:"https://arxiv.org/abs/2605.15188",s:"Evaluates agents' adaptation to new information by replaying real-world event streams."},
+  {m:"2026-04",t:"ATBench: Agent Trajectory Benchmark for Safety Evaluation and Diagnosis",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2604.02022",s:"Agent-trajectory benchmark for evaluating/diagnosing safety risks over multi-step interactions."},
+  {m:"2026-04",t:"AJ-Bench: Benchmarking Agent-as-a-Judge for Environment-Aware Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2604.18240",s:"Benchmarks agent-as-a-judge approaches for verifying agent behavior in complex environments."},
+  {m:"2026-04",t:"Claw-Eval-Live: A Live Agent Benchmark for Evolving Real-World Workflows",inst:"Unknown",ty:"Unknown",sa:"Agent Eval",link:"https://arxiv.org/abs/2604.28139",s:"A live, continuously-updated agent benchmark for end-to-end real-world workflows."},
+  {m:"2026-04",t:"An Independent Safety Evaluation of Kimi K2.5",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2604.03121",s:"Independent safety evaluation of the open-weight Kimi K2.5 model."},
+  {m:"2026-04",t:"Paper Reconstruction Evaluation: Presentation and Hallucination in AI-written Papers",inst:"Unknown",ty:"Unknown",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2604.01128",s:"Framework to evaluate quality and hallucination risks in papers written by coding agents."},
+  {m:"2026-03",t:"CollabEval: Enhancing LLM-as-a-Judge via Multi-Agent Collaboration",inst:"Amazon",ty:"Industry",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2603.00993",s:"Improves LLM-as-a-judge reliability via multi-agent collaboration."},
+  {m:"2026-03",t:"PRM-as-a-Judge: Dense Evaluation for Fine-Grained Robotic Auditing",inst:"Unknown",ty:"Unknown",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2603.21669",s:"Process-reward-model-style dense scoring to audit robotic execution beyond binary success."},
+  {m:"2026-02",t:"BiasScope: Automated Detection of Bias in LLM-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2602.09383",s:"Automated detection of biases compromising LLM-as-a-judge reliability."},
+  {m:"2026-01",t:"Agent-as-a-Judge",inst:"Cambridge / HK PolyU / Huawei",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.05111",s:"Agent-based judging to improve reliability when evaluating multi-step agent outputs."},
+  {m:"2026-01",t:"Efficient Inference for Noisy LLM-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.05420",s:"Statistical methods to debias conclusions from imperfect LLM-judge predictions."},
+  {m:"2026-01",t:"Gaming the Judge: Unfaithful Chain-of-Thought Can Undermine Agent Evaluation",inst:"Univ. of Michigan / LG AI",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.14691",s:"Unfaithful CoT in agent trajectories can fool LLM judges, undermining evaluation."},
+  {m:"2026-01",t:"Grading Scale Impact on LLM-as-a-Judge (0-5 scale aligns best)",inst:"Harvard / Stanford / UCSD / CMU",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.03444",s:"LLM-judge alignment with humans peaks on a 0-5 grading scale."},
+  {m:"2025-12",t:"Are We on the Right Way to Assessing LLM-as-a-Judge?",inst:"Univ. of Maryland / HUST",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2512.16041",s:"Critiques human-annotation-reliant LLM-as-judge benchmarks; proposes better assessment."},
+  {m:"2025-12",t:"When Reject Turns into Accept: LLM Reviewers vs Indirect Prompt Injection",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2512.10449",s:"Indirect prompt injection can flip LLM-based scientific reviewers from reject to accept."},
+  {m:"2025-11",t:"How to Correctly Report LLM-as-a-Judge Evaluations",inst:"Yonsei / Wisconsin / KRAFTON",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2511.21140",s:"Corrects bias from imperfect judge sensitivity/specificity in naive reporting."},
+  {m:"2025-10",t:"ReplicationBench: Can AI Agents Replicate Astrophysics Research Papers?",inst:"Toronto / Stanford",ty:"Academic",sa:"Agent Eval",link:"https://arxiv.org/abs/2510.24591",s:"Benchmarks whether agents can replicate astrophysics papers — open-ended research workflows."},
+  {m:"2025-09",t:"TrustJudge: Inconsistencies of LLM-as-a-Judge and How to Alleviate Them",inst:"Google DeepMind / NUS / PKU +",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2509.21117",s:"Identifies and mitigates fundamental inconsistencies in LLM-as-a-judge frameworks."},
+  {m:"2025-09",t:"Analyzing Uncertainty of LLM-as-a-Judge: Conformal Interval Evaluations",inst:"USC / MBZUAI / Rochester",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2509.18658",s:"Conformal prediction to produce calibrated interval evaluations for LLM judges."},
+  {m:"2025-08",t:"When AIs Judge AIs: The Rise of Agent-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2508.02994",s:"Surveys the emerging agent-as-a-judge paradigm for open-ended LLM evaluation."},
+  {m:"2025-08",t:"Igniting Creative Writing in SLMs: LLM-as-Judge vs Multi-Agent Rewards",inst:"Beihang / BJTU / Baidu",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2508.21476",s:"Compares LLM-as-judge vs multi-agent refined rewards as evaluation/training signals."},
+  {m:"2025-08",t:"Benchmarking LLMs to Write the Introduction of a Research Paper",inst:"UIC / Adobe",ty:"Mixed",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2508.14273",s:"A benchmark for evaluating LLM-written scientific paper introductions."},
+  {m:"2025-07",t:"Evaluation and Benchmarking of LLM Agents: A Survey",inst:"SAP Labs",ty:"Industry",sa:"Agent Eval",link:"https://arxiv.org/abs/2507.21504",s:"Survey of methods, dimensions, and challenges for evaluating LLM-based agents."},
+  {m:"2025-07",t:"Multi-Agent-as-Judge: Aligning Automated Evaluation with Human Evaluation",inst:"UIUC / Harvard / Amazon",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2507.21028",s:"Multiple LLM-agent judges aligned with multi-dimensional human judgments."},
+  {m:"2025-06",t:"DABstep: Data Agent Benchmark for Multi-step Reasoning",inst:"Hugging Face / Adyen",ty:"Industry",sa:"Agent Eval",link:"https://arxiv.org/abs/2506.23719",s:"450+ real-world multi-step data-analysis tasks for evaluating AI agents."},
+  {m:"2025-06",t:"The Automated LLM Speedrunning Benchmark",inst:"Meta / Univ. of Edinburgh",ty:"Mixed",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.22419",s:"Evaluates whether LLMs can reproduce known research improvements (NanoGPT speedruns)."},
+  {m:"2025-06",t:"An Empirical Study of LLM-as-a-Judge: Design Choices and Reliability",inst:"University of Tokyo / NEC",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2506.13639",s:"How LLM-as-judge design choices affect evaluation reliability."},
+  {m:"2025-06",t:"LLM-as-a-Fuzzy-Judge: Clinical Evaluation with Fuzzy Logic",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2506.11221",s:"Fine-tunes an LLM judge with fuzzy logic to assess clinical communication."},
+  {m:"2025-06",t:"LastingBench: Defend Benchmarks Against Knowledge Leakage",inst:"SJTU / UPenn",ty:"Academic",sa:"Contamination",link:"https://arxiv.org/abs/2506.21614",s:"Hardens QA benchmarks against memorization/leakage so scores reflect capability."},
+  {m:"2025-06",t:"CoP: Agentic Red-teaming for LLMs using Composition of Principles",inst:"CUHK / IBM Research",ty:"Mixed",sa:"Safety Eval",link:"https://arxiv.org/abs/2506.00781",s:"Agentic red-teaming composing jailbreak principles to evaluate LLM safety."},
+  {m:"2025-06",t:"Jailbreak-R1: Jailbreak Capabilities of LLMs via RL",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2506.00782",s:"Uses RL to generate jailbreaks for automated red-teaming/security evaluation."},
+  {m:"2025-06",t:"ResearchCodeBench: Implementing Novel ML Research Code",inst:"Stanford",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.02314",s:"Benchmarks LLMs on implementing novel ideas from recent ML papers."},
+  {m:"2025-06",t:"Burn After Reading: Do MLLMs Capture Order of Events? (TempVS)",inst:"Utrecht University",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.10415",s:"TempVS benchmark for temporal grounding/reasoning over image sequences in MLLMs."},
+  {m:"2025-06",t:"Controlled Retrieval-augmented Context Evaluation for Long-form RAG",inst:"UvA / JHU / Leiden",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.20051",s:"Controlled evaluation of retrieved context quality for long-form RAG."}
+];
+
+const INSIGHTS = {
+  overall: "Across Jun 2025 – May 2026, evaluation research is dominated by one fast-moving thread: <b>making LLM-as-a-judge trustworthy</b>. Papers attack judge <i>inconsistency</i> (TrustJudge, DeepMind+), <i>uncertainty</i> (conformal intervals, USC), <i>bias</i> (BiasScope), <i>grading-scale</i> effects (Harvard/Stanford), correct <i>reporting</i> (Yonsei/Wisconsin), and adversarial <i>gaming</i> of judges via unfaithful chain-of-thought (Michigan/LG) — with the paradigm extending to <b>agent-as-a-judge</b> (Cambridge/Huawei; Amazon's CollabEval). The second major thread is <b>agent &amp; safety benchmarks</b>: realistic, often <i>live</i> agent suites (DABstep, Claw-Eval-Live, ReplicationBench, the LLM Speedrunning benchmark) and safety/red-teaming (CoP, Jailbreak-R1, ATBench, an independent Kimi K2.5 safety eval, prompt-injection of LLM reviewers). A third is <b>contamination resistance</b> (LastingBench). Contributors span academia (Stanford, Harvard, CMU, UToronto, UvA), industry (Google DeepMind, Amazon, Meta, Hugging Face, SAP, Adobe, IBM, Baidu, Huawei), and many mixed collaborations.",
+  months: {
+    "2026-04":{summary:"Agent and safety benchmarks dominate.",highlights:["Live/realistic agent benchmarks: Claw-Eval-Live, ATBench (agent-trajectory safety), AJ-Bench (agent-as-a-judge).","An independent safety evaluation of the open-weight Kimi K2.5."]},
+    "2026-03":{summary:"Multi-agent judging and dense process evaluation.",highlights:["<b>Amazon</b>'s CollabEval improves judging via multi-agent collaboration.","PRM-as-a-Judge brings dense, process-level scoring to robotic auditing."]},
+    "2026-02":{summary:"Judge bias under the microscope.",highlights:["BiasScope automates detection of biases that compromise LLM-as-a-judge reliability."]},
+    "2026-01":{summary:"A burst of LLM-as-judge reliability work.",highlights:["<b>Agent-as-a-Judge</b> (Cambridge/Huawei) for complex multi-step outputs.","Harvard/Stanford/UCSD/CMU: human-judge alignment peaks on a 0-5 scale.","'Gaming the Judge' (Michigan/LG): unfaithful CoT can fool judges."]},
+    "2025-12":{summary:"Judge assessment and reviewer safety.",highlights:["UMD/HUST question how we assess LLM-as-a-judge.","Indirect prompt injection can flip LLM scientific reviewers from reject to accept."]},
+    "2025-11":{summary:"Reporting methodology.",highlights:["Yonsei/Wisconsin/KRAFTON: how to correctly report LLM-as-a-judge results given imperfect judges."]},
+    "2025-10":{summary:"Open-ended research-agent evaluation.",highlights:["ReplicationBench (Toronto/Stanford): can agents replicate astrophysics papers?"]},
+    "2025-09":{summary:"Judge consistency and uncertainty.",highlights:["<b>Google DeepMind</b>+ TrustJudge tackles judge inconsistency.","USC/MBZUAI quantify judge uncertainty with conformal prediction."]},
+    "2025-08":{summary:"Agent-as-a-judge emerges; writing benchmarks.",highlights:["'When AIs Judge AIs' frames the agent-as-a-judge paradigm.","Benchmarks for LLM-written paper introductions (UIC/Adobe)."]},
+    "2025-07":{summary:"Foundational surveys and multi-agent judging.",highlights:["<b>SAP Labs</b> survey of LLM-agent evaluation.","Multi-Agent-as-Judge (UIUC/Harvard/Amazon) aligns automated with human evaluation."]},
+    "2025-06":{summary:"Agent benchmarks, judging, contamination, and red-teaming all appear.",highlights:["<b>Hugging Face/Adyen</b> DABstep (data-agent benchmark); <b>Meta</b> LLM Speedrunning; <b>Stanford</b> ResearchCodeBench.","LastingBench (SJTU/UPenn) on contamination; CoP (CUHK/IBM) and Jailbreak-R1 on safety/red-teaming."]}
+  }
+};
+
+const insts = new Set(PAPERS.map(p=>p.inst));
+const byType = {}; PAPERS.forEach(p=>byType[p.ty]=(byType[p.ty]||0)+1);
+const months = [...new Set(PAPERS.map(p=>p.m))].sort().reverse();
+document.getElementById("stats").innerHTML =
+  '<div class="stat"><b>'+PAPERS.length+'</b><span>papers (detailed)</span></div>'+
+  '<div class="stat"><b>'+months.length+'</b><span>months</span></div>'+
+  '<div class="stat"><b>'+insts.size+'</b><span>institutions</span></div>'+
+  '<div class="stat"><b>'+(byType["Academic"]||0)+'</b><span>academic</span></div>'+
+  '<div class="stat"><b>'+(byType["Mixed"]||0)+'</b><span>mixed</span></div>'+
+  '<div class="stat"><b>'+(byType["Industry"]||0)+'</b><span>industry</span></div>';
+document.getElementById("overall").innerHTML = INSIGHTS.overall;
+document.getElementById("coverageNote").innerHTML = "<b>Coverage note:</b> renders the "+PAPERS.length+" eval papers curated to date (each month covered with a few broad passes). The self-resuming evals task saturates each month and enriches affiliations; the Notion board/chart hold the cumulative totals.";
+const legendEl = document.getElementById("legend");
+Object.keys(TYPE_COLORS).forEach(t=>{ if(!byType[t])return; const s=document.createElement("span"); s.innerHTML='<span class="typ" style="background:'+TYPE_COLORS[t]+'"></span>'+t+' ('+byType[t]+')'; legendEl.appendChild(s); });
+
+const SUBORDER = ["Eval/Benchmark","LLM-as-Judge","Agent Eval","Safety Eval","Contamination","Metrics/Methodology","Other"];
+function esc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const tree = document.getElementById("tree");
+months.forEach((m,mi)=>{
+  const mps = PAPERS.filter(p=>p.m===m);
+  const groups = {}; mps.forEach(p=>{ (groups[p.sa]=groups[p.sa]||[]).push(p); });
+  const det = document.createElement("details"); det.className="month"; if(mi===0) det.open=true;
+  const sum = document.createElement("summary");
+  sum.innerHTML = (MONTH_NAMES[m]||m)+' <span class="count">'+mps.length+' papers</span>';
+  det.appendChild(sum);
+  const body = document.createElement("div"); body.className="month-body";
+  const ins = INSIGHTS.months[m];
+  if(ins){ let h='<div class="insight"><h4>Month summary</h4><div>'+ins.summary+'</div>'; if(ins.highlights&&ins.highlights.length){ h+='<h4 style="margin-top:8px">Insights — who did what</h4><ul>'+ins.highlights.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; } h+='</div>'; body.insertAdjacentHTML('beforeend',h); }
+  SUBORDER.filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!SUBORDER.includes(k))).forEach(k=>{
+    const arr=groups[k]; if(!arr)return;
+    const sd=document.createElement("details"); sd.className="sub";
+    const ss=document.createElement("summary");
+    ss.innerHTML='<span class="dot" style="background:'+(TYPE_COLORS[arr[0].ty]||'#999')+'"></span>'+k+' <span class="c">('+arr.length+')</span>';
+    sd.appendChild(ss);
+    arr.forEach(p=>{
+      const pd=document.createElement("details"); pd.className="paper";
+      const psum=document.createElement("summary");
+      psum.innerHTML='<span class="typ" style="background:'+(TYPE_COLORS[p.ty]||'#999')+'"></span><span class="pt">'+esc(p.t)+'</span> <span class="tag">'+esc(p.inst)+'</span>';
+      pd.appendChild(psum);
+      const pb=document.createElement("div"); pb.className="pbody";
+      pb.innerHTML='<div class="meta">'+esc(p.inst)+' · '+p.ty+' · '+p.sa+' · '+(MONTH_NAMES[p.m]||p.m)+'</div>'+esc(p.s)+'<div style="margin-top:5px"><a href="'+p.link+'" target="_blank" rel="noopener">'+p.link+'</a></div>';
+      pd.appendChild(pb);
+      pd.dataset.search=(p.t+' '+p.inst+' '+p.sa+' '+p.s).toLowerCase();
+      sd.appendChild(pd);
+    });
+    body.appendChild(sd);
+  });
+  det.appendChild(body); tree.appendChild(det);
+});
+function toggleAll(open){ document.querySelectorAll("details").forEach(d=>d.open=open); }
+function applyFilter(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  document.querySelectorAll("details.paper").forEach(pd=>{ const hit=!q||pd.dataset.search.includes(q); pd.style.display=hit?"":"none"; if(q&&hit){ pd.open=true; const s=pd.closest("details.sub"); if(s)s.open=true; const mo=pd.closest("details.month"); if(mo)mo.open=true; } });
+  if(!q){ document.querySelectorAll("details.sub,details.paper").forEach(d=>d.open=false); document.querySelectorAll("details.month").forEach((d,i)=>d.open=(i===0)); }
+}
+</script>
+</body>
+</html>

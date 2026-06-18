@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Dashboards — Post-Training & Evals</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#f7f8fa; color:#1a1a1a; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.5; }
+  .wrap { max-width:880px; margin:0 auto; padding:48px 20px 80px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  .sub { color:#667; font-size:14px; margin:0 0 28px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  a.card { display:block; text-decoration:none; color:inherit; background:#fff; border:1px solid #e7e8ec; border-radius:16px; padding:20px; transition:box-shadow .12s, transform .12s; }
+  a.card:hover { box-shadow:0 8px 28px rgba(0,0,0,.08); transform:translateY(-2px); }
+  .card h2 { font-size:17px; margin:0 0 6px; }
+  .card p { font-size:13px; color:#556; margin:0; }
+  .pill { display:inline-block; font-size:11px; font-weight:600; color:#fff; border-radius:999px; padding:2px 9px; margin-bottom:10px; }
+  .foot { color:#99a; font-size:12px; margin-top:32px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Research Dashboards</h1>
+  <p class="sub">Living maps of the LLM/agent <b>post-training</b> and <b>evaluation</b> literature — tree views, per-paper summaries, affiliations, and monthly insights. Auto-updated from a curated research database.</p>
+  <div class="grid">
+    <a class="card" href="post-training-dashboard.html">
+      <span class="pill" style="background:#8b5cf6">Post-Training</span>
+      <h2>Post-Training Dashboard &rarr;</h2>
+      <p>RLHF, RLVR, policy optimization (GRPO/PPO/DPO), preference optimization, distillation, reward modeling, reasoning, and agentic RL — by month and sub-area.</p>
+    </a>
+    <a class="card" href="evals-dashboard.html">
+      <span class="pill" style="background:#22a06b">Evals</span>
+      <h2>Evals Dashboard &rarr;</h2>
+      <p>LLM/agent evaluation — benchmarks, LLM-as-judge reliability, agent &amp; safety evaluation, and contamination — by month and sub-area.</p>
+    </a>
+    <a class="card" href="source-map.html">
+      <span class="pill" style="background:#e8833a">Source Map</span>
+      <h2>Source Map (Knowledge Graph) &rarr;</h2>
+      <p>Interactive radial graph of recent papers clustered by sub-area, colored by source type (industry / academic / independent).</p>
+    </a>
+  </div>
+  <p class="foot">Generated and maintained by an automated research pipeline. Each paper is filtered to its publication month; affiliations are read from source pages. Summaries are auto-generated — skim before quoting.</p>
+</div>
+</body>
+</html>
