@@ -7,184 +7,207 @@
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #f7f8fa; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 22px 18px 60px; }
-  h1 { font-size: 22px; margin: 0 0 2px; }
-  .sub { color: #667; font-size: 13px; margin: 0 0 16px; }
-  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-  .stat { background: #fff; border: 1px solid #e7e8ec; border-radius: 12px; padding: 10px 14px; font-size: 13px; min-width: 92px; }
-  .stat b { font-size: 20px; display: block; line-height: 1.1; }
-  .stat span { color: #778; }
-  .card { background: #fff; border: 1px solid #e7e8ec; border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; }
-  .card h2 { font-size: 15px; margin: 0 0 8px; }
-  .overall { font-size: 14px; color: #333; }
-  .note { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#6b5e2e; margin-top:10px; }
+  body { margin:0; background:#f7f8fa; color:#1a1a1a; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.5; }
+  .wrap { max-width:1080px; margin:0 auto; padding:22px 18px 60px; }
+  h1 { font-size:22px; margin:0 0 2px; }
+  .sub { color:#667; font-size:13px; margin:0 0 16px; }
+  .nav { font-size:12.5px; margin-bottom:14px; } .nav a { color:#2563eb; text-decoration:none; margin-right:14px; }
+  .stats { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+  .stat { background:#fff; border:1px solid #e7e8ec; border-radius:12px; padding:10px 14px; font-size:13px; min-width:90px; }
+  .stat b { font-size:20px; display:block; line-height:1.1; } .stat span { color:#778; }
+  .card { background:#fff; border:1px solid #e7e8ec; border-radius:14px; padding:16px 18px; margin-bottom:16px; }
+  .card h2 { font-size:15px; margin:0 0 8px; } .overall { font-size:14px; color:#333; }
+  .legend { font-size:12px; color:#667; margin:10px 0 0; display:flex; flex-wrap:wrap; gap:12px; } .legend span{ display:inline-flex; align-items:center; gap:5px; }
   .controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
   .controls input { flex:1; min-width:180px; padding:9px 12px; border:1px solid #d8dade; border-radius:10px; font-size:13px; }
-  .btn { border:1px solid #d8dade; background:#fff; border-radius:10px; padding:8px 12px; font-size:12.5px; cursor:pointer; }
-  .btn:hover { background:#f0f1f4; }
-  details.month > summary { cursor:pointer; list-style:none; font-size:16px; font-weight:700; padding:12px 14px; background:#fff; border:1px solid #e7e8ec; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
-  details.month > summary::-webkit-details-marker { display:none; }
-  details.month > summary .count { font-size:12px; font-weight:600; color:#667; background:#eef0f3; border-radius:999px; padding:2px 9px; }
-  details.month[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
-  .month-body { border:1px solid #e7e8ec; border-top:none; border-radius:0 0 12px 12px; padding:6px 14px 14px; margin-bottom:14px; background:#fff; }
-  .insight { background:#fbfaf5; border:1px solid #efe9d6; border-radius:10px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
-  .insight h4 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:#8a7a3a; }
-  .insight ul { margin:6px 0 0; padding-left:18px; }
-  .insight li { margin:3px 0; }
-  details.sub > summary { cursor:pointer; list-style:none; font-size:13.5px; font-weight:650; padding:8px 10px; border-radius:8px; display:flex; align-items:center; gap:8px; }
-  details.sub > summary::-webkit-details-marker { display:none; }
-  details.sub > summary:hover { background:#f4f5f7; }
-  details.sub > summary .dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
-  details.sub > summary .c { font-size:11px; color:#889; }
-  details.paper > summary { cursor:pointer; list-style:none; padding:6px 10px; font-size:13px; display:flex; gap:8px; align-items:baseline; margin-left:14px; }
-  details.paper > summary::-webkit-details-marker { display:none; }
-  details.paper > summary:hover { background:#f4f5f7; border-radius:6px; }
+  .btn { border:1px solid #d8dade; background:#fff; border-radius:10px; padding:8px 12px; font-size:12.5px; cursor:pointer; } .btn:hover { background:#f0f1f4; }
+  details.grp > summary { cursor:pointer; list-style:none; font-size:15px; font-weight:700; padding:11px 14px; background:#fff; border:1px solid #e7e8ec; border-radius:12px; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+  details.grp > summary::-webkit-details-marker { display:none; }
+  details.grp > summary .count { font-size:12px; font-weight:600; color:#667; background:#eef0f3; border-radius:999px; padding:2px 9px; }
+  details.grp[open] > summary { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+  .grp-body { border:1px solid #e7e8ec; border-top:none; border-radius:0 0 12px 12px; padding:6px 12px 12px; margin-bottom:14px; background:#fff; }
+  details.paper > summary { cursor:pointer; list-style:none; padding:6px 10px; font-size:13px; display:flex; gap:8px; align-items:baseline; }
+  details.paper > summary::-webkit-details-marker { display:none; } details.paper > summary:hover { background:#f4f5f7; border-radius:6px; }
   details.paper > summary .pt { font-weight:600; }
   .tag { font-size:10.5px; padding:1px 7px; border-radius:999px; border:1px solid #dcdee3; color:#556; white-space:nowrap; }
-  .pbody { padding:2px 12px 10px 34px; font-size:12.5px; color:#444; }
-  .pbody .meta { color:#778; font-size:11.5px; margin-bottom:4px; }
-  .pbody a { color:#2563eb; text-decoration:none; }
+  .pbody { padding:2px 12px 10px 22px; font-size:12.5px; color:#444; } .pbody .meta { color:#778; font-size:11.5px; margin-bottom:4px; } .pbody a { color:#2563eb; text-decoration:none; }
   .typ { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; }
-  .legend { font-size:12px; color:#667; margin:10px 0 0; display:flex; flex-wrap:wrap; gap:12px; }
-  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .src { font-size:10.5px; padding:1px 6px; border-radius:6px; background:#eef0f3; color:#556; }
   .foot { color:#99a; font-size:11.5px; margin-top:18px; line-height:1.5; }
-  .nav { font-size:12.5px; margin-bottom:14px; }
-  .nav a { color:#2563eb; text-decoration:none; margin-right:14px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="nav"><a href="index.html">&larr; All dashboards</a></div>
   <h1>Evals Research Dashboard</h1>
-  <p class="sub">Knowledge graph of LLM/agent <b>evaluation</b> research — tree, summaries, and monthly insights. Topic: <b>Evals</b>, covering <b>Jun 2025 – May 2026</b>. Source: the Research Papers Notion database.</p>
+  <p class="sub">Knowledge graph of LLM/agent <b>evaluation</b> research — by sub-area, multi-source (arXiv, OpenReview, ACL Anthology, conference proceedings). Topic: <b>Evals</b> · ~2025–2026.</p>
   <div class="stats" id="stats"></div>
-  <div class="card">
-    <h2>Overall summary</h2>
-    <div class="overall" id="overall"></div>
-    <div class="legend" id="legend"></div>
-    <div class="note" id="coverageNote"></div>
-  </div>
+  <div class="card"><h2>Overall summary</h2><div class="overall" id="overall"></div><div class="legend" id="legend"></div></div>
   <div class="controls">
-    <input id="q" placeholder="Filter papers by title, institution, or sub-area…" oninput="applyFilter()">
+    <input id="q" placeholder="Filter by title, institution, sub-area, or source…" oninput="applyFilter()">
     <button class="btn" onclick="toggleAll(true)">Expand all</button>
     <button class="btn" onclick="toggleAll(false)">Collapse all</button>
   </div>
   <div id="tree"></div>
-  <p class="foot">Tree: Month → Sub-area → Paper. Click a paper for its summary, affiliation, and link. Color dot = affiliation type. Rebuilt fully (all DB rows) on each scheduled run of the evals task.</p>
+  <p class="foot">Grouped by sub-area; click a paper for summary, affiliation, source, and link. Color = affiliation type; chip = source. Non-arXiv links come from web search (mostly well-known benchmarks; a few OpenReview IDs worth spot-checking). Rebuilt from the full Notion database on each scheduled evals run.</p>
 </div>
 <script>
-const TYPE_COLORS = { "Industry":"#e8833a","Academic":"#3b82f6","Independent":"#22a06b","Mixed":"#8b5cf6","Unknown":"#9aa0aa" };
-const MONTH_NAMES = {"2026-05":"May 2026","2026-04":"April 2026","2026-03":"March 2026","2026-02":"February 2026","2026-01":"January 2026","2025-12":"December 2025","2025-11":"November 2025","2025-10":"October 2025","2025-09":"September 2025","2025-08":"August 2025","2025-07":"July 2025","2025-06":"June 2025"};
-
-const PAPERS = [
-  {m:"2026-05",t:"FutureSim: Replaying World Events to Evaluate Adaptive Agents",inst:"Unknown",ty:"Unknown",sa:"Agent Eval",link:"https://arxiv.org/abs/2605.15188",s:"Evaluates agents' adaptation to new information by replaying real-world event streams."},
-  {m:"2026-04",t:"ATBench: Agent Trajectory Benchmark for Safety Evaluation and Diagnosis",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2604.02022",s:"Agent-trajectory benchmark for evaluating/diagnosing safety risks over multi-step interactions."},
-  {m:"2026-04",t:"AJ-Bench: Benchmarking Agent-as-a-Judge for Environment-Aware Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2604.18240",s:"Benchmarks agent-as-a-judge approaches for verifying agent behavior in complex environments."},
-  {m:"2026-04",t:"Claw-Eval-Live: A Live Agent Benchmark for Evolving Real-World Workflows",inst:"Unknown",ty:"Unknown",sa:"Agent Eval",link:"https://arxiv.org/abs/2604.28139",s:"A live, continuously-updated agent benchmark for end-to-end real-world workflows."},
-  {m:"2026-04",t:"An Independent Safety Evaluation of Kimi K2.5",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2604.03121",s:"Independent safety evaluation of the open-weight Kimi K2.5 model."},
-  {m:"2026-04",t:"Paper Reconstruction Evaluation: Presentation and Hallucination in AI-written Papers",inst:"Unknown",ty:"Unknown",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2604.01128",s:"Framework to evaluate quality and hallucination risks in papers written by coding agents."},
-  {m:"2026-03",t:"CollabEval: Enhancing LLM-as-a-Judge via Multi-Agent Collaboration",inst:"Amazon",ty:"Industry",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2603.00993",s:"Improves LLM-as-a-judge reliability via multi-agent collaboration."},
-  {m:"2026-03",t:"PRM-as-a-Judge: Dense Evaluation for Fine-Grained Robotic Auditing",inst:"Unknown",ty:"Unknown",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2603.21669",s:"Process-reward-model-style dense scoring to audit robotic execution beyond binary success."},
-  {m:"2026-02",t:"BiasScope: Automated Detection of Bias in LLM-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2602.09383",s:"Automated detection of biases compromising LLM-as-a-judge reliability."},
-  {m:"2026-01",t:"Agent-as-a-Judge",inst:"Cambridge / HK PolyU / Huawei",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.05111",s:"Agent-based judging to improve reliability when evaluating multi-step agent outputs."},
-  {m:"2026-01",t:"Efficient Inference for Noisy LLM-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.05420",s:"Statistical methods to debias conclusions from imperfect LLM-judge predictions."},
-  {m:"2026-01",t:"Gaming the Judge: Unfaithful Chain-of-Thought Can Undermine Agent Evaluation",inst:"Univ. of Michigan / LG AI",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.14691",s:"Unfaithful CoT in agent trajectories can fool LLM judges, undermining evaluation."},
-  {m:"2026-01",t:"Grading Scale Impact on LLM-as-a-Judge (0-5 scale aligns best)",inst:"Harvard / Stanford / UCSD / CMU",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2601.03444",s:"LLM-judge alignment with humans peaks on a 0-5 grading scale."},
-  {m:"2025-12",t:"Are We on the Right Way to Assessing LLM-as-a-Judge?",inst:"Univ. of Maryland / HUST",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2512.16041",s:"Critiques human-annotation-reliant LLM-as-judge benchmarks; proposes better assessment."},
-  {m:"2025-12",t:"When Reject Turns into Accept: LLM Reviewers vs Indirect Prompt Injection",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2512.10449",s:"Indirect prompt injection can flip LLM-based scientific reviewers from reject to accept."},
-  {m:"2025-11",t:"How to Correctly Report LLM-as-a-Judge Evaluations",inst:"Yonsei / Wisconsin / KRAFTON",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2511.21140",s:"Corrects bias from imperfect judge sensitivity/specificity in naive reporting."},
-  {m:"2025-10",t:"ReplicationBench: Can AI Agents Replicate Astrophysics Research Papers?",inst:"Toronto / Stanford",ty:"Academic",sa:"Agent Eval",link:"https://arxiv.org/abs/2510.24591",s:"Benchmarks whether agents can replicate astrophysics papers — open-ended research workflows."},
-  {m:"2025-09",t:"TrustJudge: Inconsistencies of LLM-as-a-Judge and How to Alleviate Them",inst:"Google DeepMind / NUS / PKU +",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2509.21117",s:"Identifies and mitigates fundamental inconsistencies in LLM-as-a-judge frameworks."},
-  {m:"2025-09",t:"Analyzing Uncertainty of LLM-as-a-Judge: Conformal Interval Evaluations",inst:"USC / MBZUAI / Rochester",ty:"Academic",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2509.18658",s:"Conformal prediction to produce calibrated interval evaluations for LLM judges."},
-  {m:"2025-08",t:"When AIs Judge AIs: The Rise of Agent-as-a-Judge Evaluation",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2508.02994",s:"Surveys the emerging agent-as-a-judge paradigm for open-ended LLM evaluation."},
-  {m:"2025-08",t:"Igniting Creative Writing in SLMs: LLM-as-Judge vs Multi-Agent Rewards",inst:"Beihang / BJTU / Baidu",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2508.21476",s:"Compares LLM-as-judge vs multi-agent refined rewards as evaluation/training signals."},
-  {m:"2025-08",t:"Benchmarking LLMs to Write the Introduction of a Research Paper",inst:"UIC / Adobe",ty:"Mixed",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2508.14273",s:"A benchmark for evaluating LLM-written scientific paper introductions."},
-  {m:"2025-07",t:"Evaluation and Benchmarking of LLM Agents: A Survey",inst:"SAP Labs",ty:"Industry",sa:"Agent Eval",link:"https://arxiv.org/abs/2507.21504",s:"Survey of methods, dimensions, and challenges for evaluating LLM-based agents."},
-  {m:"2025-07",t:"Multi-Agent-as-Judge: Aligning Automated Evaluation with Human Evaluation",inst:"UIUC / Harvard / Amazon",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2507.21028",s:"Multiple LLM-agent judges aligned with multi-dimensional human judgments."},
-  {m:"2025-06",t:"DABstep: Data Agent Benchmark for Multi-step Reasoning",inst:"Hugging Face / Adyen",ty:"Industry",sa:"Agent Eval",link:"https://arxiv.org/abs/2506.23719",s:"450+ real-world multi-step data-analysis tasks for evaluating AI agents."},
-  {m:"2025-06",t:"The Automated LLM Speedrunning Benchmark",inst:"Meta / Univ. of Edinburgh",ty:"Mixed",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.22419",s:"Evaluates whether LLMs can reproduce known research improvements (NanoGPT speedruns)."},
-  {m:"2025-06",t:"An Empirical Study of LLM-as-a-Judge: Design Choices and Reliability",inst:"University of Tokyo / NEC",ty:"Mixed",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2506.13639",s:"How LLM-as-judge design choices affect evaluation reliability."},
-  {m:"2025-06",t:"LLM-as-a-Fuzzy-Judge: Clinical Evaluation with Fuzzy Logic",inst:"Unknown",ty:"Unknown",sa:"LLM-as-Judge",link:"https://arxiv.org/abs/2506.11221",s:"Fine-tunes an LLM judge with fuzzy logic to assess clinical communication."},
-  {m:"2025-06",t:"LastingBench: Defend Benchmarks Against Knowledge Leakage",inst:"SJTU / UPenn",ty:"Academic",sa:"Contamination",link:"https://arxiv.org/abs/2506.21614",s:"Hardens QA benchmarks against memorization/leakage so scores reflect capability."},
-  {m:"2025-06",t:"CoP: Agentic Red-teaming for LLMs using Composition of Principles",inst:"CUHK / IBM Research",ty:"Mixed",sa:"Safety Eval",link:"https://arxiv.org/abs/2506.00781",s:"Agentic red-teaming composing jailbreak principles to evaluate LLM safety."},
-  {m:"2025-06",t:"Jailbreak-R1: Jailbreak Capabilities of LLMs via RL",inst:"Unknown",ty:"Unknown",sa:"Safety Eval",link:"https://arxiv.org/abs/2506.00782",s:"Uses RL to generate jailbreaks for automated red-teaming/security evaluation."},
-  {m:"2025-06",t:"ResearchCodeBench: Implementing Novel ML Research Code",inst:"Stanford",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.02314",s:"Benchmarks LLMs on implementing novel ideas from recent ML papers."},
-  {m:"2025-06",t:"Burn After Reading: Do MLLMs Capture Order of Events? (TempVS)",inst:"Utrecht University",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.10415",s:"TempVS benchmark for temporal grounding/reasoning over image sequences in MLLMs."},
-  {m:"2025-06",t:"Controlled Retrieval-augmented Context Evaluation for Long-form RAG",inst:"UvA / JHU / Leiden",ty:"Academic",sa:"Eval/Benchmark",link:"https://arxiv.org/abs/2506.20051",s:"Controlled evaluation of retrieved context quality for long-form RAG."}
+const TYPE_COLORS={ "Industry":"#e8833a","Academic":"#3b82f6","Independent":"#22a06b","Mixed":"#8b5cf6","Unknown":"#9aa0aa" };
+const SUBORDER=["Eval/Benchmark","LLM-as-Judge","Agent Eval","Safety Eval","Contamination","Metrics/Methodology","Reward Modeling","Reasoning","Data/Synthetic","Other"];
+// p: [title, inst, type, subarea, source, date, link, summary]
+const P=[
+["DABstep: Data Agent Benchmark for Multi-step Reasoning","Hugging Face / Adyen","Industry","Agent Eval","arXiv","Jun 2025","https://arxiv.org/abs/2506.23719","450+ real-world multi-step data-analysis tasks for agents."],
+["The Automated LLM Speedrunning Benchmark","Meta / Edinburgh","Mixed","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.22419","Tests whether LLMs can reproduce known research improvements."],
+["An Empirical Study of LLM-as-a-Judge: Design Choices & Reliability","U. Tokyo / NEC","Mixed","LLM-as-Judge","arXiv","Jun 2025","https://arxiv.org/abs/2506.13639","How judge design choices affect evaluation reliability."],
+["LLM-as-a-Fuzzy-Judge: Clinical Evaluation with Fuzzy Logic","Unknown","Unknown","LLM-as-Judge","arXiv","Jun 2025","https://arxiv.org/abs/2506.11221","Fuzzy-logic LLM judge for clinical communication."],
+["LastingBench: Defend Benchmarks Against Knowledge Leakage","SJTU / UPenn","Academic","Contamination","arXiv","Jun 2025","https://arxiv.org/abs/2506.21614","Hardens QA benchmarks against memorization/leakage."],
+["CoP: Agentic Red-teaming via Composition of Principles","CUHK / IBM","Mixed","Safety Eval","arXiv","Jun 2025","https://arxiv.org/abs/2506.00781","Agentic red-teaming composing jailbreak principles."],
+["Jailbreak-R1: Jailbreak Capabilities of LLMs via RL","Unknown","Unknown","Safety Eval","arXiv","Jun 2025","https://arxiv.org/abs/2506.00782","RL-generated jailbreaks for automated red-teaming."],
+["ResearchCodeBench: Implementing Novel ML Research Code","Stanford","Academic","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.02314","Benchmarks LLMs implementing novel ideas from recent papers."],
+["Burn After Reading / TempVS (MLLM event order)","Utrecht","Academic","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.10415","Temporal grounding/reasoning over image sequences in MLLMs."],
+["Controlled RAG Context Evaluation for Long-form RAG","UvA / JHU / Leiden","Academic","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.20051","Controlled evaluation of retrieved context for long-form RAG."],
+["Evaluation and Benchmarking of LLM Agents: A Survey","SAP Labs","Industry","Agent Eval","arXiv","Jul 2025","https://arxiv.org/abs/2507.21504","Survey of methods/challenges for evaluating LLM agents."],
+["Multi-Agent-as-Judge","UIUC / Harvard / Amazon","Mixed","LLM-as-Judge","arXiv","Jul 2025","https://arxiv.org/abs/2507.21028","Multiple agent judges aligned with human evaluation."],
+["When AIs Judge AIs: Agent-as-a-Judge","Unknown","Unknown","LLM-as-Judge","arXiv","Aug 2025","https://arxiv.org/abs/2508.02994","Surveys the agent-as-a-judge evaluation paradigm."],
+["Igniting Creative Writing in SLMs: Judge vs Multi-Agent Rewards","Beihang / BJTU / Baidu","Mixed","LLM-as-Judge","arXiv","Aug 2025","https://arxiv.org/abs/2508.21476","Judge vs multi-agent rewards as eval/training signals."],
+["Benchmarking LLMs to Write Paper Introductions","UIC / Adobe","Mixed","Eval/Benchmark","arXiv","Aug 2025","https://arxiv.org/abs/2508.14273","Benchmark for LLM-written scientific introductions."],
+["TrustJudge: Inconsistencies of LLM-as-a-Judge","DeepMind / NUS / PKU","Mixed","LLM-as-Judge","arXiv","Sep 2025","https://arxiv.org/abs/2509.21117","Identifies/mitigates inconsistencies in LLM judging."],
+["Analyzing Uncertainty of LLM-as-a-Judge (Conformal)","USC / MBZUAI / Rochester","Academic","LLM-as-Judge","arXiv","Sep 2025","https://arxiv.org/abs/2509.18658","Conformal-prediction interval evaluations for judges."],
+["ReplicationBench: Can Agents Replicate Astrophysics Papers?","Toronto / Stanford","Academic","Agent Eval","arXiv","Oct 2025","https://arxiv.org/abs/2510.24591","Benchmarks agents replicating astrophysics research."],
+["How to Correctly Report LLM-as-a-Judge Evaluations","Yonsei / Wisconsin / KRAFTON","Mixed","LLM-as-Judge","arXiv","Nov 2025","https://arxiv.org/abs/2511.21140","Corrects bias from imperfect judge sensitivity/specificity."],
+["Are We on the Right Way to Assessing LLM-as-a-Judge?","UMD / HUST","Academic","LLM-as-Judge","arXiv","Dec 2025","https://arxiv.org/abs/2512.16041","Critiques human-annotation-reliant judge benchmarks."],
+["When Reject Turns into Accept: LLM Reviewers vs Prompt Injection","Unknown","Unknown","Safety Eval","arXiv","Dec 2025","https://arxiv.org/abs/2512.10449","Prompt injection flips LLM reviewers reject→accept."],
+["Agent-as-a-Judge","Cambridge / HK PolyU / Huawei","Mixed","LLM-as-Judge","arXiv","Jan 2026","https://arxiv.org/abs/2601.05111","Agent-based judging for complex multi-step outputs."],
+["Efficient Inference for Noisy LLM-as-a-Judge Evaluation","Unknown","Unknown","LLM-as-Judge","arXiv","Jan 2026","https://arxiv.org/abs/2601.05420","Debiased conclusions from imperfect judge predictions."],
+["Gaming the Judge: Unfaithful CoT Undermines Agent Evaluation","Michigan / LG AI","Mixed","LLM-as-Judge","arXiv","Jan 2026","https://arxiv.org/abs/2601.14691","Unfaithful CoT can fool LLM judges of agents."],
+["Grading Scale Impact on LLM-as-a-Judge (0-5 best)","Harvard / Stanford / UCSD / CMU","Academic","LLM-as-Judge","arXiv","Jan 2026","https://arxiv.org/abs/2601.03444","Judge-human alignment peaks on a 0-5 scale."],
+["BiasScope: Automated Detection of Bias in LLM-as-a-Judge","Unknown","Unknown","LLM-as-Judge","arXiv","Feb 2026","https://arxiv.org/abs/2602.09383","Automated detection of LLM-judge biases."],
+["CollabEval: Enhancing LLM-as-a-Judge via Multi-Agent Collaboration","Amazon","Industry","LLM-as-Judge","arXiv","Mar 2026","https://arxiv.org/abs/2603.00993","Multi-agent collaboration improves LLM judging."],
+["PRM-as-a-Judge: Dense Evaluation for Robotic Auditing","Unknown","Unknown","Eval/Benchmark","arXiv","Mar 2026","https://arxiv.org/abs/2603.21669","Dense process-reward scoring for robotic auditing."],
+["ATBench: Agent Trajectory Benchmark for Safety Evaluation","Unknown","Unknown","Safety Eval","arXiv","Apr 2026","https://arxiv.org/abs/2604.02022","Agent-trajectory benchmark for safety diagnosis."],
+["AJ-Bench: Agent-as-a-Judge for Environment-Aware Evaluation","Unknown","Unknown","LLM-as-Judge","arXiv","Apr 2026","https://arxiv.org/abs/2604.18240","Benchmarks agent-as-a-judge in complex environments."],
+["Claw-Eval-Live: Live Agent Benchmark for Evolving Workflows","Unknown","Unknown","Agent Eval","arXiv","Apr 2026","https://arxiv.org/abs/2604.28139","Live benchmark for end-to-end real-world workflows."],
+["An Independent Safety Evaluation of Kimi K2.5","Unknown","Unknown","Safety Eval","arXiv","Apr 2026","https://arxiv.org/abs/2604.03121","Independent safety eval of open-weight Kimi K2.5."],
+["Paper Reconstruction Evaluation (AI-written papers)","Unknown","Unknown","Eval/Benchmark","arXiv","Apr 2026","https://arxiv.org/abs/2604.01128","Evaluates quality/hallucination in agent-written papers."],
+["FutureSim: Replaying World Events to Evaluate Adaptive Agents","Unknown","Unknown","Agent Eval","arXiv","May 2026","https://arxiv.org/abs/2605.15188","Replays event streams to test agent adaptation."],
+["OSS-Bench: LLMs via Realistic Open-Source Dev Pipeline","Unknown","Unknown","Eval/Benchmark","OpenReview","2026","https://openreview.net/forum?id=CkxjXuI7LL","Live coding eval auto-built from OSS repositories."],
+["TheAgentCompany: LLM Agents on Consequential Real-World Tasks","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=LZnKNApvhG","Agents on real professional workplace tasks."],
+["LiveBench: Challenging, Contamination-Limited LLM Benchmark","Unknown","Unknown","Contamination","OpenReview","2025","https://openreview.net/forum?id=sKYHBTAxVa","Contamination-limited benchmark from recent sources."],
+["CheckEval: Reliable LLM-as-a-Judge with Checklists","Unknown","Unknown","LLM-as-Judge","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.796/","Checklist-based judge for text-generation eval (EMNLP)."],
+["From Generation to Judgment: LLM-as-a-Judge (survey)","Unknown","Unknown","LLM-as-Judge","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.138/","Survey of LLM-as-judge opportunities/challenges (EMNLP)."],
+["Improving LLM-as-a-Judge with the Judgment Distribution","Unknown","Unknown","LLM-as-Judge","Conference/Journal","2025","https://aclanthology.org/2025.findings-emnlp.1259/","Uses judgment distribution to improve judging (EMNLP)."],
+["Does Data Contamination Detection Work for LLMs? Survey","Unknown","Unknown","Contamination","Conference/Journal","2025","https://aclanthology.org/2025.findings-naacl.291/","Surveys/evaluates contamination-detection assumptions (NAACL)."],
+["MMLU-CF: Contamination-Free MMLU","Unknown","Unknown","Contamination","Conference/Journal","2025","https://aclanthology.org/2025.acl-long.656/","Contamination-free MMLU; scores/rankings drop (ACL)."],
+["Multimodal Situational Safety","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=I9bEi6LNgt","1,960 pairs assessing MLLM situational safety."],
+["OmniBench: Universal Omni-Language Models","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=SSF4qgsNYE","Tri-modal reasoning benchmark (NeurIPS D&B)."],
+["EmbodiedBench: MLLMs for Vision-Driven Embodied Agents","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=DgGF2LEBPS","Benchmark for vision-driven embodied agents (ICML)."],
+["GaRAGe: Benchmark with Grounding Annotations for RAG","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.findings-acl.875/","RAG benchmark with 35K+ grounding passages (ACL)."],
+["MIRAGE: Metric-Intensive RAG Evaluation","Unknown","Unknown","Metrics/Methodology","Conference/Journal","2025","https://aclanthology.org/2025.findings-naacl.157/","Metric-intensive RAG QA dataset (NAACL)."],
+["OmniEval: Automatic RAG Evaluation (Finance)","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.292/","Omnidirectional RAG eval for finance (EMNLP)."],
+["AbstentionBench: Reasoning LLMs Fail on Unanswerable Qs","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=OkHC30LLpO","Abstention across 20 unanswerable-question datasets."],
+["MathArena: LLMs on Uncontaminated Math Competitions","Unknown","Unknown","Contamination","OpenReview","2025","https://openreview.net/pdf?id=y0zL9IZxZ7","50+ LLMs on recent uncontaminated competitions."],
+["Agent-SafetyBench: Evaluating the Safety of LLM Agents","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=Rz0yAoHqb3","349 environments, 2,000 cases across 8 risk types."],
+["CASE-Bench: Context-Aware Safety Benchmark","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=FCHIGDCoow","Context-aware LLM safety benchmark."],
+["AgentAuditor: Human-Level Safety/Security Eval for Agents","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=2KKqp7MWJM","ASSEBench: 2,293 records across 15 risk types."],
+["WASP: Web Agent Security vs Prompt Injection","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=Ip1cCUAllL","Benchmarks web agents against prompt injection."],
+["SWE-PolyBench: Repo-Level Coding-Agent Benchmark","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=n577FC6CKk","2,110 execution-based tasks across 21 repos."],
+["Multi-SWE-bench: Multilingual Issue Resolving","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=MhBZzkz4h9","2,132 GitHub issues across 8 languages."],
+["ToolSandbox: Stateful Interactive Tool-Use Benchmark","Apple","Industry","Agent Eval","Conference/Journal","2025","https://aclanthology.org/2025.findings-naacl.65/","Stateful tool-use benchmark (NAACL)."],
+["HalluLens: LLM Hallucination Benchmark","Meta","Industry","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.acl-long.1176/","Extrinsic/intrinsic hallucination taxonomy (ACL)."],
+["GUI-360: Benchmark for Computer-Using Agents","Microsoft","Industry","Agent Eval","OpenReview","2026","https://openreview.net/forum?id=JLEneHy8qC","1.2M+ action steps across Windows apps."],
+["MLLM-ISU: Intrusion Scene Understanding Benchmark","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=3wJh9Pw2sn","MLLM intrusion-scene VQA across six subtasks."],
+["MMAD: MLLMs in Industrial Anomaly Detection","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=JDiER86r8v","Benchmarks MLLMs on industrial anomaly detection."],
+["MAC: Live Benchmark for MLLMs in Scientific Understanding","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=0aHOVhkuOB","25K+ scientific image-text pairs for MLLMs."],
+["ShieldBench: Persistence of LLM Safety Interventions","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=ciPdAGW54l","Tests whether safety interventions persist."],
+["SG-Bench: LLM Safety Generalization","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=c4JE1gemWc","Safety generalization across tasks/prompt types."],
+["SENTINEL: Formal Safety Eval of Embodied LLM Agents","Unknown","Unknown","Safety Eval","OpenReview","2025","https://openreview.net/forum?id=vCyxemIKLL","Temporal-logic framework for embodied-agent safety."],
+["MMLU-ProX: Multilingual Advanced LLM Evaluation","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.79/","Multilingual MMLU-Pro across 36 LLMs (EMNLP)."],
+["MathTutorBench: Pedagogical Capabilities of LLM Tutors","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.11/","Open-ended tutoring capability benchmark (EMNLP)."],
+["LLMs are Like a Chameleon (C-BOD)","Unknown","Unknown","Metrics/Methodology","Conference/Journal","2025","https://aclanthology.org/2025.emnlp-main.1098/","~2.75% MMLU drop under rephrasings (EMNLP)."],
+["SWE-rebench: Decontaminated SWE-Agent Evaluation","Unknown","Unknown","Contamination","OpenReview","2025","https://openreview.net/forum?id=nMpJoVmRy1","Automated decontaminated SWE-agent tasks."],
+["SWE-Bench+: Enhanced Coding Benchmark","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=R40rS2afQ3","Fixes SWE-Bench data-quality issues."],
+["CUMath: Undergraduate Computational Math Benchmark","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=3tm37YNMdl","2,100 computational-math problems with reasoning eval."],
+["AgentHard: Hardening LLM-Agent Evaluation","Unknown","Unknown","Metrics/Methodology","OpenReview","2025","https://openreview.net/forum?id=owFVvaLFdw","Cleans brittle agent-benchmark artifacts."],
+["FORGE: Formal Eval of LLM Systematic Generalization","Unknown","Unknown","Metrics/Methodology","OpenReview","2025","https://openreview.net/forum?id=gIvtkwqyub","Formal difficulty metric probing generalization."],
+["WorldGUI: Desktop GUI Automation Benchmark","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=oJZYmlVtwD","Interactive desktop GUI automation across apps."],
+["A3: Android Agent Arena","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=zE2tVigoub","100 tasks across 20 Android apps."],
+["BEARCUBS: Computer-Using Web Agents","Unknown","Unknown","Agent Eval","OpenReview","2025","https://openreview.net/forum?id=0JzWiigkUy","Benchmark for computer-using web agents."],
+["AcademicEval: Live Long-Context Benchmark","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=LjQ4voE5bs","Live long-context tasks from arXiv writing."],
+["LongCodeBench: Coding LLMs at 1M Context","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=GFPoM8Ylp8","Long-context code comprehension to 1M tokens."],
+["LongGenBench: Long-Form Generation in Long Context","Unknown","Unknown","Eval/Benchmark","OpenReview","2025","https://openreview.net/forum?id=3A71qNKWAS","Long-form generation under complex instructions."],
+["M-IFEval: Multilingual Instruction-Following Eval","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.findings-naacl.344/","IFEval extended to FR/JA/ES (NAACL)."],
+["IFIR: Instruction-Following in Expert-Domain Retrieval","Unknown","Unknown","Eval/Benchmark","Conference/Journal","2025","https://aclanthology.org/2025.naacl-long.511/","2,426 expert-domain retrieval examples (NAACL)."],
+["REIFE: Re-evaluating Instruction-Following Evaluation","Unknown","Unknown","Metrics/Methodology","Conference/Journal","2025","https://aclanthology.org/2025.naacl-long.610/","Meta-eval of 25 LLMs, 15 protocols (NAACL)."],
+["100-LongBench: Do Long-Context Benchmarks Test It?","Unknown","Unknown","Metrics/Methodology","OpenReview","2025","https://openreview.net/forum?id=zfaZZzbw0m","Questions validity of long-context benchmarks."],
+["Evaluating Scoring Bias in LLM-as-a-Judge","Ant Group","Industry","LLM-as-Judge","arXiv","Jun 2025","https://arxiv.org/abs/2506.22316","Scoring biases compromising judge reliability."],
+["DeepResearch Bench: Deep Research Agents","USTC / Metastone","Mixed","Agent Eval","arXiv","Jun 2025","https://arxiv.org/abs/2506.11763","Benchmark for autonomous deep-research agents."],
+["Mind2Web 2: Agentic Search with Agent-as-a-Judge","Ohio State / Amazon AGI","Mixed","Agent Eval","arXiv","Jun 2025","https://arxiv.org/abs/2506.21506","Agentic web search with agent-as-a-judge."],
+["RewardBench 2: Advancing Reward Model Evaluation","UW / AI2 / Cohere","Mixed","Reward Modeling","arXiv","Jun 2025","https://arxiv.org/abs/2506.01937","Updated reward-model evaluation benchmark."],
+["OJBench: Competition-Level Code Benchmark","CAS / Tsinghua / Moonshot","Mixed","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.16395","Online-judge competition code benchmark."],
+["ExpertLongBench: Expert Long-Form Generation","CMU / Michigan","Academic","Eval/Benchmark","arXiv","Jun 2025","https://arxiv.org/abs/2506.01241","Expert long-form generation with checklists."],
+["FutureX: Live Benchmark for Future Prediction","Fudan / Stanford / ByteDance","Mixed","Agent Eval","arXiv","Aug 2025","https://arxiv.org/abs/2508.11987","Live future-prediction agent benchmark."],
+["LLM Robustness Leaderboard v1","PRISM Eval","Industry","Safety Eval","arXiv","Aug 2025","https://arxiv.org/abs/2508.06296","Automated robustness leaderboard."],
+["A Survey on Large Language Model Benchmarks","SCUT / CAS","Academic","Eval/Benchmark","arXiv","Aug 2025","https://arxiv.org/abs/2508.15361","Survey of the LLM benchmark landscape."],
+["MCP-Bench: Tool-Using Agents via MCP Servers","UC Berkeley / Accenture","Mixed","Agent Eval","arXiv","Aug 2025","https://arxiv.org/abs/2508.20453","Multi-step tool-use via MCP servers."],
+["Search-Time Data Contamination","Scale AI","Industry","Contamination","arXiv","Aug 2025","https://arxiv.org/abs/2508.13180","Contamination when search surfaces eval data."],
+["AetherCode: Premier Programming Competitions","ByteDance","Industry","Eval/Benchmark","arXiv","Aug 2025","https://arxiv.org/abs/2508.16402","Premier competitive-programming benchmark."],
+["The Silent Judge: Shortcut Bias in LLM-as-a-Judge","Sharif University","Academic","LLM-as-Judge","arXiv","Sep 2025","https://arxiv.org/abs/2509.26072","Shortcut biases in LLM judges."],
+["FinSearchComp: Financial Search & Reasoning","ByteDance / Columbia","Mixed","Eval/Benchmark","arXiv","Sep 2025","https://arxiv.org/abs/2509.13160","Expert financial search/reasoning benchmark."],
+["MCPMark: Stress-Testing Realistic MCP Use","NUS / Fudan / SJTU","Academic","Agent Eval","arXiv","Sep 2025","https://arxiv.org/abs/2509.24002","Write-heavy MCP tool-use stress test."],
+["Holistic Agent Leaderboard","Unknown","Unknown","Agent Eval","arXiv","Oct 2025","https://arxiv.org/abs/2510.11977","Infrastructure for AI agent evaluation."],
+["Hubble: Studying LLM Memorization","USC / MPI-SWS","Academic","Contamination","arXiv","Oct 2025","https://arxiv.org/abs/2510.19811","Model suite for studying memorization."],
+["Vibe Checker: Aligning Code Eval with Human Preference","DeepMind / UIUC / USC","Mixed","Metrics/Methodology","arXiv","Oct 2025","https://arxiv.org/abs/2510.07315","Code eval aligned to human preference."],
+["BigCodeArena: Human Preferences via Execution","ETH / UW / UIUC","Academic","Eval/Benchmark","arXiv","Oct 2025","https://arxiv.org/abs/2510.08697","Execution-grounded code preference arena."],
+["AMO-Bench: High School Math Competitions","CAS / HIT / Meituan","Mixed","Eval/Benchmark","arXiv","Oct 2025","https://arxiv.org/abs/2510.26768","Olympiad-level human-crafted math benchmark."],
+["MVU-Eval: Multi-Video Understanding for MLLMs","Nanjing / Kuaishou / CASIA","Mixed","Eval/Benchmark","arXiv","Nov 2025","https://arxiv.org/abs/2511.07250","Multi-video understanding benchmark."],
+["On Evaluating LLM Alignment by LLMs as Judges","Unknown","Unknown","LLM-as-Judge","arXiv","Nov 2025","https://arxiv.org/abs/2511.20604","Evaluates alignment via judging capability."],
+["MCPAgentBench: LLM Agent MCP Tool Use","Peking / ZTE","Mixed","Agent Eval","arXiv","Dec 2025","https://arxiv.org/abs/2512.24565","Real-world MCP tool-use benchmark."],
+["Terminal-Bench: Hard Command-Line Agent Tasks","UW / Anthropic / CMU / Stanford","Mixed","Agent Eval","arXiv","Jan 2026","https://arxiv.org/abs/2601.11868","Hard long-horizon CLI agent tasks."],
+["Benchmark^2: Systematic Evaluation of LLM Benchmarks","Unknown","Unknown","Metrics/Methodology","arXiv","Jan 2026","https://arxiv.org/abs/2601.03986","Assesses the quality of LLM benchmarks."],
+["SWE-Universe: Verifiable Environments to Millions","Unknown","Unknown","Agent Eval","arXiv","Feb 2026","https://arxiv.org/abs/2602.02361","Auto-builds millions of verifiable SWE envs."],
+["MemoryArena: Agent Memory in Multi-Session Tasks","Unknown","Unknown","Agent Eval","arXiv","Feb 2026","https://arxiv.org/abs/2602.16313","Evaluates agent memory with action."],
+["How Controllable Are LLMs?","Alibaba / NUS / Zhejiang","Mixed","Metrics/Methodology","arXiv","Mar 2026","https://arxiv.org/abs/2603.02578","Unified evaluation of LLM controllability."],
+["ClawBench: Everyday Online Tasks for Agents","Unknown","Unknown","Agent Eval","arXiv","Apr 2026","https://arxiv.org/abs/2604.08523","Benchmark of everyday online agent tasks."],
+["XL-SafetyBench: Cross-Cultural LLM Safety","Unknown","Unknown","Safety Eval","arXiv","May 2026","https://arxiv.org/abs/2605.05662","Country-grounded cross-cultural safety benchmark."],
+["Measuring Five-Nines Reliability in Saturated Benchmarks","Unknown","Unknown","Metrics/Methodology","arXiv","May 2026","https://arxiv.org/abs/2605.11209","Sample-efficient high-reliability evaluation."]
 ];
 
-const INSIGHTS = {
-  overall: "Across Jun 2025 – May 2026, evaluation research is dominated by one fast-moving thread: <b>making LLM-as-a-judge trustworthy</b>. Papers attack judge <i>inconsistency</i> (TrustJudge, DeepMind+), <i>uncertainty</i> (conformal intervals, USC), <i>bias</i> (BiasScope), <i>grading-scale</i> effects (Harvard/Stanford), correct <i>reporting</i> (Yonsei/Wisconsin), and adversarial <i>gaming</i> of judges via unfaithful chain-of-thought (Michigan/LG) — with the paradigm extending to <b>agent-as-a-judge</b> (Cambridge/Huawei; Amazon's CollabEval). The second major thread is <b>agent &amp; safety benchmarks</b>: realistic, often <i>live</i> agent suites (DABstep, Claw-Eval-Live, ReplicationBench, the LLM Speedrunning benchmark) and safety/red-teaming (CoP, Jailbreak-R1, ATBench, an independent Kimi K2.5 safety eval, prompt-injection of LLM reviewers). A third is <b>contamination resistance</b> (LastingBench). Contributors span academia (Stanford, Harvard, CMU, UToronto, UvA), industry (Google DeepMind, Amazon, Meta, Hugging Face, SAP, Adobe, IBM, Baidu, Huawei), and many mixed collaborations.",
-  months: {
-    "2026-04":{summary:"Agent and safety benchmarks dominate.",highlights:["Live/realistic agent benchmarks: Claw-Eval-Live, ATBench (agent-trajectory safety), AJ-Bench (agent-as-a-judge).","An independent safety evaluation of the open-weight Kimi K2.5."]},
-    "2026-03":{summary:"Multi-agent judging and dense process evaluation.",highlights:["<b>Amazon</b>'s CollabEval improves judging via multi-agent collaboration.","PRM-as-a-Judge brings dense, process-level scoring to robotic auditing."]},
-    "2026-02":{summary:"Judge bias under the microscope.",highlights:["BiasScope automates detection of biases that compromise LLM-as-a-judge reliability."]},
-    "2026-01":{summary:"A burst of LLM-as-judge reliability work.",highlights:["<b>Agent-as-a-Judge</b> (Cambridge/Huawei) for complex multi-step outputs.","Harvard/Stanford/UCSD/CMU: human-judge alignment peaks on a 0-5 scale.","'Gaming the Judge' (Michigan/LG): unfaithful CoT can fool judges."]},
-    "2025-12":{summary:"Judge assessment and reviewer safety.",highlights:["UMD/HUST question how we assess LLM-as-a-judge.","Indirect prompt injection can flip LLM scientific reviewers from reject to accept."]},
-    "2025-11":{summary:"Reporting methodology.",highlights:["Yonsei/Wisconsin/KRAFTON: how to correctly report LLM-as-a-judge results given imperfect judges."]},
-    "2025-10":{summary:"Open-ended research-agent evaluation.",highlights:["ReplicationBench (Toronto/Stanford): can agents replicate astrophysics papers?"]},
-    "2025-09":{summary:"Judge consistency and uncertainty.",highlights:["<b>Google DeepMind</b>+ TrustJudge tackles judge inconsistency.","USC/MBZUAI quantify judge uncertainty with conformal prediction."]},
-    "2025-08":{summary:"Agent-as-a-judge emerges; writing benchmarks.",highlights:["'When AIs Judge AIs' frames the agent-as-a-judge paradigm.","Benchmarks for LLM-written paper introductions (UIC/Adobe)."]},
-    "2025-07":{summary:"Foundational surveys and multi-agent judging.",highlights:["<b>SAP Labs</b> survey of LLM-agent evaluation.","Multi-Agent-as-Judge (UIUC/Harvard/Amazon) aligns automated with human evaluation."]},
-    "2025-06":{summary:"Agent benchmarks, judging, contamination, and red-teaming all appear.",highlights:["<b>Hugging Face/Adyen</b> DABstep (data-agent benchmark); <b>Meta</b> LLM Speedrunning; <b>Stanford</b> ResearchCodeBench.","LastingBench (SJTU/UPenn) on contamination; CoP (CUHK/IBM) and Jailbreak-R1 on safety/red-teaming."]}
-  }
-};
-
-const insts = new Set(PAPERS.map(p=>p.inst));
-const byType = {}; PAPERS.forEach(p=>byType[p.ty]=(byType[p.ty]||0)+1);
-const months = [...new Set(PAPERS.map(p=>p.m))].sort().reverse();
-document.getElementById("stats").innerHTML =
-  '<div class="stat"><b>'+PAPERS.length+'</b><span>papers (detailed)</span></div>'+
-  '<div class="stat"><b>'+months.length+'</b><span>months</span></div>'+
-  '<div class="stat"><b>'+insts.size+'</b><span>institutions</span></div>'+
-  '<div class="stat"><b>'+(byType["Academic"]||0)+'</b><span>academic</span></div>'+
-  '<div class="stat"><b>'+(byType["Mixed"]||0)+'</b><span>mixed</span></div>'+
-  '<div class="stat"><b>'+(byType["Industry"]||0)+'</b><span>industry</span></div>';
-document.getElementById("overall").innerHTML = INSIGHTS.overall;
-document.getElementById("coverageNote").innerHTML = "<b>Coverage note:</b> renders the "+PAPERS.length+" eval papers curated to date (each month covered with a few broad passes). The self-resuming evals task saturates each month and enriches affiliations; the Notion board/chart hold the cumulative totals.";
-const legendEl = document.getElementById("legend");
+const insts=new Set(P.map(p=>p[1]).filter(x=>x!=="Unknown"));
+const byType={}; P.forEach(p=>byType[p[2]]=(byType[p[2]]||0)+1);
+const bySrc={}; P.forEach(p=>bySrc[p[4]]=(bySrc[p[4]]||0)+1);
+document.getElementById("stats").innerHTML=
+  '<div class="stat"><b>'+P.length+'</b><span>papers</span></div>'+
+  '<div class="stat"><b>'+(bySrc["arXiv"]||0)+'</b><span>arXiv</span></div>'+
+  '<div class="stat"><b>'+((bySrc["OpenReview"]||0)+(bySrc["Conference/Journal"]||0))+'</b><span>non-arXiv</span></div>'+
+  '<div class="stat"><b>'+SUBORDER.filter(s=>P.some(p=>p[3]===s)).length+'</b><span>sub-areas</span></div>';
+document.getElementById("overall").innerHTML="The evaluation literature is dominated by <b>LLM-as-a-judge reliability</b> (bias, calibration, inconsistency, gaming, agent-as-a-judge), a fast-growing wave of <b>agent benchmarks</b> (coding/SWE, web & GUI, tool-use/MCP, embodied, long-horizon), and rising attention to <b>contamination</b> (decontaminated/live benchmarks, leakage detection) and <b>safety/red-team</b> evaluation. Cross-cutting <b>methodology</b> work questions whether benchmarks are robust, reliable, and actually measuring what they claim. Multi-source: arXiv plus OpenReview, ACL Anthology, and NeurIPS/ICLR/ICML proceedings.";
+const legendEl=document.getElementById("legend");
 Object.keys(TYPE_COLORS).forEach(t=>{ if(!byType[t])return; const s=document.createElement("span"); s.innerHTML='<span class="typ" style="background:'+TYPE_COLORS[t]+'"></span>'+t+' ('+byType[t]+')'; legendEl.appendChild(s); });
 
-const SUBORDER = ["Eval/Benchmark","LLM-as-Judge","Agent Eval","Safety Eval","Contamination","Metrics/Methodology","Other"];
-function esc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-const tree = document.getElementById("tree");
-months.forEach((m,mi)=>{
-  const mps = PAPERS.filter(p=>p.m===m);
-  const groups = {}; mps.forEach(p=>{ (groups[p.sa]=groups[p.sa]||[]).push(p); });
-  const det = document.createElement("details"); det.className="month"; if(mi===0) det.open=true;
-  const sum = document.createElement("summary");
-  sum.innerHTML = (MONTH_NAMES[m]||m)+' <span class="count">'+mps.length+' papers</span>';
-  det.appendChild(sum);
-  const body = document.createElement("div"); body.className="month-body";
-  const ins = INSIGHTS.months[m];
-  if(ins){ let h='<div class="insight"><h4>Month summary</h4><div>'+ins.summary+'</div>'; if(ins.highlights&&ins.highlights.length){ h+='<h4 style="margin-top:8px">Insights — who did what</h4><ul>'+ins.highlights.map(x=>'<li>'+x+'</li>').join('')+'</ul>'; } h+='</div>'; body.insertAdjacentHTML('beforeend',h); }
-  SUBORDER.filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!SUBORDER.includes(k))).forEach(k=>{
-    const arr=groups[k]; if(!arr)return;
-    const sd=document.createElement("details"); sd.className="sub";
-    const ss=document.createElement("summary");
-    ss.innerHTML='<span class="dot" style="background:'+(TYPE_COLORS[arr[0].ty]||'#999')+'"></span>'+k+' <span class="c">('+arr.length+')</span>';
-    sd.appendChild(ss);
-    arr.forEach(p=>{
-      const pd=document.createElement("details"); pd.className="paper";
-      const psum=document.createElement("summary");
-      psum.innerHTML='<span class="typ" style="background:'+(TYPE_COLORS[p.ty]||'#999')+'"></span><span class="pt">'+esc(p.t)+'</span> <span class="tag">'+esc(p.inst)+'</span>';
-      pd.appendChild(psum);
-      const pb=document.createElement("div"); pb.className="pbody";
-      pb.innerHTML='<div class="meta">'+esc(p.inst)+' · '+p.ty+' · '+p.sa+' · '+(MONTH_NAMES[p.m]||p.m)+'</div>'+esc(p.s)+'<div style="margin-top:5px"><a href="'+p.link+'" target="_blank" rel="noopener">'+p.link+'</a></div>';
-      pd.appendChild(pb);
-      pd.dataset.search=(p.t+' '+p.inst+' '+p.sa+' '+p.s).toLowerCase();
-      sd.appendChild(pd);
-    });
-    body.appendChild(sd);
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const groups={}; P.forEach(p=>{(groups[p[3]]=groups[p[3]]||[]).push(p);});
+const tree=document.getElementById("tree");
+SUBORDER.filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!SUBORDER.includes(k))).forEach((k,gi)=>{
+  const arr=groups[k]; if(!arr)return;
+  const det=document.createElement("details"); det.className="grp"; if(gi===0)det.open=true;
+  const sum=document.createElement("summary"); sum.innerHTML=k+' <span class="count">'+arr.length+'</span>'; det.appendChild(sum);
+  const body=document.createElement("div"); body.className="grp-body";
+  arr.forEach(p=>{
+    const pd=document.createElement("details"); pd.className="paper";
+    const ps=document.createElement("summary");
+    ps.innerHTML='<span class="typ" style="background:'+(TYPE_COLORS[p[2]]||"#999")+'"></span><span class="pt">'+esc(p[0])+'</span> <span class="tag">'+esc(p[1])+'</span> <span class="src">'+p[4]+'</span>';
+    pd.appendChild(ps);
+    const pb=document.createElement("div"); pb.className="pbody";
+    pb.innerHTML='<div class="meta">'+esc(p[1])+' · '+p[2]+' · '+p[4]+' · '+p[5]+'</div>'+esc(p[7])+'<div style="margin-top:5px"><a href="'+p[6]+'" target="_blank" rel="noopener">'+p[6]+'</a></div>';
+    pd.appendChild(pb); pd.dataset.search=(p[0]+' '+p[1]+' '+p[3]+' '+p[4]+' '+p[7]).toLowerCase();
+    body.appendChild(pd);
   });
   det.appendChild(body); tree.appendChild(det);
 });
-function toggleAll(open){ document.querySelectorAll("details").forEach(d=>d.open=open); }
-function applyFilter(){
-  const q=document.getElementById("q").value.trim().toLowerCase();
-  document.querySelectorAll("details.paper").forEach(pd=>{ const hit=!q||pd.dataset.search.includes(q); pd.style.display=hit?"":"none"; if(q&&hit){ pd.open=true; const s=pd.closest("details.sub"); if(s)s.open=true; const mo=pd.closest("details.month"); if(mo)mo.open=true; } });
-  if(!q){ document.querySelectorAll("details.sub,details.paper").forEach(d=>d.open=false); document.querySelectorAll("details.month").forEach((d,i)=>d.open=(i===0)); }
+function toggleAll(o){document.querySelectorAll("details").forEach(d=>d.open=o);}
+function applyFilter(){const q=document.getElementById("q").value.trim().toLowerCase();
+  document.querySelectorAll("details.paper").forEach(pd=>{const hit=!q||pd.dataset.search.includes(q); pd.style.display=hit?"":"none"; if(q&&hit){pd.open=true; const g=pd.closest("details.grp"); if(g)g.open=true;}});
+  if(!q){document.querySelectorAll("details.paper").forEach(d=>d.open=false); document.querySelectorAll("details.grp").forEach((d,i)=>d.open=(i===0));}
 }
 </script>
 </body>
